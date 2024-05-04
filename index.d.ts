@@ -73,9 +73,23 @@ export type I_arc = {
 };
 export type I_rect = [I_point, I_point];
 export declare function DownloadUrl(url: string, name: string): Promise<void>;
-export declare function stall(stallTime?: number): Promise<void>;
+export declare function Stall(stallTime?: number): Promise<void>;
 export declare function FileToBase64(file: any, callback?: (result: any) => void): void;
 export declare function HandleBackButton(callback?: () => void): void;
+export declare class DragClass {
+    dragIndex: number;
+    onChange: (list: any[], from: any, to: any) => void;
+    start: (e: any) => void;
+    over: (e: any) => void;
+    drop: (e: any, list: any[]) => void;
+    swap: (arr: any[], from: any, to: any) => any[];
+    className: string;
+    getAttrs: (list: any[], index: number) => void;
+    constructor(p: {
+        onChange: (list: any[], from: any, to: any) => void;
+        className: string;
+    });
+}
 export declare function GetClient(e: any): {
     x: number;
     y: number;
@@ -107,6 +121,7 @@ export declare function CalculateDistance(lat1: any, lon1: any, lat2: any, lon2:
 export declare function getEventAttrs(eventType: 'onMouseDown' | 'onMouseMove' | 'onMouseUp', callback: any): {
     [x: string]: any;
 };
+export declare function AddToAttrs(attrs: any, p: any): any;
 export declare function JsonValidator(json: any, schema: any): any;
 export declare class Swip {
     p: I_Swip;
@@ -233,4 +248,65 @@ export declare class Geo {
     }[]) => string;
     constructor();
 }
+export declare function GetCities(): {
+    "\u0622\u0630\u0631\u0628\u0627\u06CC\u062C\u0627\u0646 \u0634\u0631\u0642\u06CC": string[];
+    "\u0622\u0630\u0631\u0628\u0627\u06CC\u062C\u0627\u0646 \u063A\u0631\u0628\u06CC": string[];
+    اردبیل: string[];
+    اصفهان: string[];
+    البرز: string[];
+    ایلام: string[];
+    بوشهر: string[];
+    تهران: string[];
+    "\u0686\u0647\u0627\u0631\u0645\u062D\u0627\u0644 \u0648 \u0628\u062E\u062A\u06CC\u0627\u0631\u06CC": string[];
+    "\u062E\u0631\u0627\u0633\u0627\u0646 \u062C\u0646\u0648\u0628\u06CC": string[];
+    "\u062E\u0631\u0627\u0633\u0627\u0646 \u0631\u0636\u0648\u06CC": string[];
+    "\u062E\u0631\u0627\u0633\u0627\u0646 \u0634\u0645\u0627\u0644\u06CC": string[];
+    خوزستان: string[];
+    زنجان: string[];
+    سمنان: string[];
+    "\u0633\u06CC\u0633\u062A\u0627\u0646 \u0648 \u0628\u0644\u0648\u0686\u0633\u062A\u0627\u0646": string[];
+    فارس: string[];
+    قزوین: string[];
+    قم: string[];
+    کردستان: string[];
+    کرمان: string[];
+    کرمانشاه: string[];
+    "\u06A9\u0647\u06AF\u06CC\u0644\u0648\u06CC\u0647 \u0648 \u0628\u0648\u06CC\u0631\u0627\u062D\u0645\u062F": string[];
+    گلستان: string[];
+    لرستان: string[];
+    گیلان: string[];
+    مازندران: string[];
+    مرکزی: string[];
+    هرمزگان: string[];
+    همدان: string[];
+    یزد: string[];
+};
+export declare function Get2Digit(n: number): string;
 export declare function svgArc(x: any, y: any, radius: any, startAngle: any, endAngle: any): string;
+type I_storage_model = {
+    [key: string]: any;
+};
+type I_storage_time = {
+    [key: string]: number;
+};
+export declare class Storage {
+    model: I_storage_model;
+    time: I_storage_time;
+    init: () => void;
+    saveStorage: (model: I_storage_model, time: I_storage_time) => void;
+    getParent: (field: string) => I_storage_model;
+    removeValueByField: (field: string) => I_storage_model;
+    setValueByField: (field: string, value: any) => I_storage_model;
+    getValueByField: (field: string) => any;
+    save: (field: string, value: any) => I_storage_model;
+    remove: (field: string, callback?: () => void) => I_storage_model;
+    load: (field: string, def?: any, time?: number) => any;
+    clear: () => void;
+    download: (file: any, name: string) => void;
+    export: () => void;
+    read: (file: any, callback: (model: I_storage_model) => void) => void;
+    import: (file: any, callback: () => void) => void;
+    getModel: () => I_storage_model;
+    constructor(id: string);
+}
+export {};

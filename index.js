@@ -1,6 +1,5 @@
 import * as ReactDOMServer from 'react-dom/server';
 import $ from 'jquery';
-
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
@@ -21,7 +20,7 @@ export async function DownloadUrl(url, name) {
     window.URL.revokeObjectURL(url);
   }).catch(() => alert('oh no!'));
 }
-export async function stall(stallTime = 3000) {
+export async function Stall(stallTime = 3000) {
   await new Promise(resolve => setTimeout(resolve, stallTime));
 }
 export function FileToBase64(file, callback) {
@@ -36,6 +35,74 @@ export function HandleBackButton(callback = () => {}) {
     window.history.pushState({}, '');
     callback();
   };
+}
+export class DragClass {
+  constructor(p) {
+    _defineProperty(this, "dragIndex", void 0);
+    _defineProperty(this, "onChange", void 0);
+    _defineProperty(this, "start", void 0);
+    _defineProperty(this, "over", void 0);
+    _defineProperty(this, "drop", void 0);
+    _defineProperty(this, "swap", void 0);
+    _defineProperty(this, "className", void 0);
+    _defineProperty(this, "getAttrs", void 0);
+    this.dragIndex = 0;
+    this.className = p.className;
+    this.onChange = p.onChange;
+    this.start = e => {
+      this.dragIndex = parseInt($(e.target).attr('data-index'));
+    };
+    this.over = e => {
+      e.preventDefault();
+    };
+    this.drop = (e, list) => {
+      e.stopPropagation();
+      let from = this.dragIndex,
+        dom = $(e.target);
+      if (!dom.hasClass(this.className)) {
+        dom = dom.parents(`.${this.className}`);
+      }
+      ;
+      if (!dom.hasClass(this.className)) {
+        return;
+      }
+      ;
+      let to = parseInt(dom.attr('data-index'));
+      if (from === to) {
+        return;
+      }
+      if (typeof this.onChange === 'function') {
+        let newList = this.swap(list, from, to);
+        this.onChange(newList, list[from], list[to]);
+      }
+    };
+    this.swap = (arr, from, to) => {
+      if (to === from + 1) {
+        let a = to;
+        to = from;
+        from = a;
+      }
+      let Arr = arr.map((o, i) => {
+        o._testswapindex = i;
+        return o;
+      });
+      let fromIndex = Arr[from]._testswapindex;
+      Arr.splice(to, 0, {
+        ...Arr[from],
+        _testswapindex: false
+      });
+      return Arr.filter(o => o._testswapindex !== fromIndex);
+    };
+    this.getAttrs = (list, index) => {
+      return {
+        ['data-index']: index,
+        onDragStart: this.start,
+        onDragOver: this.over,
+        onDrop: e => this.drop(e, list),
+        draggable: true
+      };
+    };
+  }
 }
 export function GetClient(e) {
   return 'ontouchstart' in document.documentElement && e.changedTouches ? {
@@ -55,10 +122,11 @@ export function ExportToExcel(rows, config = {}) {
       if (typeof str !== 'string') {
         return str;
       }
-      var persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g],
+      let persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g],
         arabicNumbers = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
-      for (var i = 0; i < 10; i++) {
-        str = str.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
+      let i;
+      for (i = 0; i < 10; i++) {
+        str = str.replace(persianNumbers[i], i.toString()).replace(arabicNumbers[i], i.toString());
       }
       return str;
     },
@@ -76,11 +144,13 @@ export function ExportToExcel(rows, config = {}) {
     },
     export() {
       let name = window.prompt(promptText);
-      if (!name || name === null || !name.length) return;
+      if (!name || name === null || !name.length) {
+        return;
+      }
+      ;
       var data = this.getJSON(rows);
       var arrData = typeof data != "object" ? JSON.parse(data) : data;
       var CSV = "";
-      // CSV += 'title';
       CSV += '\r\n\n';
       if (true) {
         let row = "";
@@ -105,7 +175,7 @@ export function ExportToExcel(rows, config = {}) {
       var fileName = name.replace(/ /g, "_");
       var universalBOM = "\uFEFF";
       var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(universalBOM + CSV);
-      var link = document.createElement("a");
+      let link = document.createElement("a");
       link.href = uri;
       link.style = "visibility:hidden";
       link.download = fileName + ".csv";
@@ -265,6 +335,26 @@ export function getEventAttrs(eventType, callback) {
 }
 function toRadians(degrees) {
   return degrees * (Math.PI / 180);
+}
+export function AddToAttrs(attrs, p) {
+  attrs = attrs || {};
+  let {
+    style
+  } = p;
+  let attrClassName = attrs.className ? attrs.className.split(' ') : [];
+  let className = p.className ? Array.isArray(p.className) ? p.className : p.className.split(' ') : [];
+  let classNames = [...attrClassName, ...className.filter(o => !!o)];
+  let newClassName = classNames.length ? classNames.join(' ') : undefined;
+  let newStyle = {
+    ...attrs.style,
+    ...style
+  };
+  return {
+    ...attrs,
+    className: newClassName,
+    style: newStyle,
+    ...p.attrs
+  };
 }
 export function JsonValidator(json, schema) {
   let $$ = {
@@ -456,7 +546,6 @@ export class Swip {
     this.click = e => {
       //jeloye click bad az drag ro bayad begirim choon click call mishe 
       if (this.isMoving) {
-        console.log('prevent click after move');
         return;
       }
       this.domLimit = this.getDOMLimit('dom');
@@ -1659,6 +1748,45 @@ export class Geo {
     };
   }
 }
+export function GetCities() {
+  return {
+    "آذربایجان شرقی": ["اسکو", "اهر", "ایلخچی", "آبش احمد", "آذرشهر", "آقکند", "باسمنج", "بخشایش", "بستان آباد", "بناب", "بناب جدید", "تبریز", "ترک", "ترکمانچای", "تسوج", "تیکمه داش", "جلفا", "خاروانا", "خامنه", "خراجو", "خسروشهر", "خضرلو", "خمارلو", "خواجه", "دوزدوزان", "زرنق", "زنوز", "سراب", "سردرود", "سهند", "سیس", "سیه رود", "شبستر", "شربیان", "شرفخانه", "شندآباد", "صوفیان", "عجب شیر", "قره آغاج", "کشکسرای", "کلوانق", "کلیبر", "کوزه کنان", "گوگان", "لیلان", "مراغه", "مرند", "ملکان", "ملک کیان", "ممقان", "مهربان", "میانه", "نظرکهریزی", "هادی شهر", "هرگلان", "هریس", "هشترود", "هوراند", "وایقان", "ورزقان", "یامچی"],
+    "آذربایجان غربی": ["ارومیه", "اشنویه", "ایواوغلی", "آواجیق", "باروق", "بازرگان", "بوکان", "پلدشت", "پیرانشهر", "تازه شهر", "تکاب", "چهاربرج", "خوی", "دیزج دیز", "ربط", "سردشت", "سرو", "سلماس", "سیلوانه", "سیمینه", "سیه چشمه", "شاهین دژ", "شوط", "فیرورق", "قره ضیاءالدین", "قطور", "قوشچی", "کشاورز", "گردکشانه", "ماکو", "محمدیار", "محمودآباد", "مهاباد", "میاندوآب", "میرآباد", "نالوس", "نقده", "نوشین"],
+    "اردبیل": ["اردبیل", "اصلاندوز", "آبی بیگلو", "بیله سوار", "پارس آباد", "تازه کند", "تازه کندانگوت", "جعفرآباد", "خلخال", "رضی", "سرعین", "عنبران", "فخرآباد", "کلور", "کوراییم", "گرمی", "گیوی", "لاهرود", "مشگین شهر", "نمین", "نیر", "هشتجین", "هیر"],
+    "اصفهان": ["ابریشم", "ابوزیدآباد", "اردستان", "اژیه", "اصفهان", "افوس", "انارک", "ایمانشهر", "آران وبیدگل", "بادرود", "باغ بهادران", "بافران", "برزک", "برف انبار", "بهاران شهر", "بهارستان", "بوئین و میاندشت", "پیربکران", "تودشک", "تیران", "جندق", "جوزدان", "جوشقان و کامو", "چادگان", "چرمهین", "چمگردان", "حبیب آباد", "حسن آباد", "حنا", "خالدآباد", "خمینی شهر", "خوانسار", "خور", "خورزوق", "داران", "دامنه", "درچه", "دستگرد", "دهاقان", "دهق", "دولت آباد", "دیزیچه", "رزوه", "رضوانشهر", "زاینده رود", "زرین شهر", "زواره", "زیباشهر", "سده لنجان", "سفیدشهر", "سگزی", "سمیرم", "شاهین شهر", "شهرضا", "طالخونچه", "عسگران", "علویجه", "فرخی", "فریدونشهر", "فلاورجان", "فولادشهر", "قمصر", "قهجاورستان", "قهدریجان", "کاشان", "کرکوند", "کلیشاد و سودرجان", "کمشچه", "کمه", "کهریزسنگ", "کوشک", "کوهپایه", "گرگاب", "گزبرخوار", "گلپایگان", "گلدشت", "گلشهر", "گوگد", "لای بید", "مبارکه", "مجلسی", "محمدآباد", "مشکات", "منظریه", "مهاباد", "میمه", "نائین", "نجف آباد", "نصرآباد", "نطنز", "نوش آباد", "نیاسر", "نیک آباد", "هرند", "ورزنه", "ورنامخواست", "وزوان", "ونک"],
+    "البرز": ["اسارا", "اشتهارد", "تنکمان", "تهران دشت", "چهارباغ", "ساوجبلاغ", "سعید آباد", "شهر جدید هشتگرد", "طالقان", "فردیس", "کرج", "کردان", "کمال شهر", "کوهسار", "گرمدره", "گلبهار", "ماهدشت", "محمدشهر", "مشکین دشت", "نظرآباد", "هشتگرد"],
+    "ایلام": ["ارکواز", "ایلام", "ایوان", "آبدانان", "آسمان آباد", "بدره", "پهله", "توحید", "چوار", "دره شهر", "دلگشا", "دهلران", "زرنه", "سراب باغ", "سرابله", "صالح آباد", "لومار", "مهران", "مورموری", "موسیان", "میمه"],
+    "بوشهر": ["امام حسن", "انارستان", "اهرم", "آب پخش", "آبدان", "برازجان", "بردخون", "بندردیر", "بندردیلم", "بندرریگ", "بندرکنگان", "بندرگناوه", "بنک", "بوشهر", "تنگ ارم", "جم", "چغادک", "خارک", "خورموج", "دالکی", "دلوار", "ریز", "سعدآباد", "سیراف", "شبانکاره", "شنبه", "عسلویه", "کاکی", "کلمه", "نخل تقی", "وحدتیه"],
+    "تهران": ["ارجمند", "اسلامشهر", "اندیشه", "آبسرد", "آبعلی", "باغستان", "باقرشهر", "بومهن", "پاکدشت", "پردیس", "پرند", "پیشوا", "تهران", "جوادآباد", "چهاردانگه", "حسن آباد", "دماوند", "دیزین", "شهر ری", "رباط کریم", "رودهن", "شاهدشهر", "شریف آباد", "شمشک", "شهریار", "صالح آباد", "صباشهر", "صفادشت", "فردوسیه", "فشم", "فیروزکوه", "قدس", "قرچک", "قیامدشت", "کهریزک", "کیلان", "گلستان", "لواسان", "مارلیک", "ملارد", "میگون", "نسیم شهر", "نصیرآباد", "وحیدیه", "ورامین"],
+    "چهارمحال و بختیاری": ["اردل", "آلونی", "باباحیدر", "بروجن", "بلداجی", "بن", "جونقان", "چلگرد", "سامان", "سفیددشت", "سودجان", "سورشجان", "شلمزار", "شهرکرد", "طاقانک", "فارسان", "فرادنبه", "فرخ شهر", "کیان", "گندمان", "گهرو", "لردگان", "مال خلیفه", "ناغان", "نافچ", "نقنه", "هفشجان"],
+    "خراسان جنوبی": ["ارسک", "اسدیه", "اسفدن", "اسلامیه", "آرین شهر", "آیسک", "بشرویه", "بیرجند", "حاجی آباد", "خضری دشت بیاض", "خوسف", "زهان", "سرایان", "سربیشه", "سه قلعه", "شوسف", "طبس ", "فردوس", "قاین", "قهستان", "محمدشهر", "مود", "نهبندان", "نیمبلوک"],
+    "خراسان رضوی": ["احمدآباد صولت", "انابد", "باجگیران", "باخرز", "بار", "بایگ", "بجستان", "بردسکن", "بیدخت", "بینالود", "تایباد", "تربت جام", "تربت حیدریه", "جغتای", "جنگل", "چاپشلو", "چکنه", "چناران", "خرو", "خلیل آباد", "خواف", "داورزن", "درگز", "در رود", "دولت آباد", "رباط سنگ", "رشتخوار", "رضویه", "روداب", "ریوش", "سبزوار", "سرخس", "سفیدسنگ", "سلامی", "سلطان آباد", "سنگان", "شادمهر", "شاندیز", "ششتمد", "شهرآباد", "شهرزو", "صالح آباد", "طرقبه", "عشق آباد", "فرهادگرد", "فریمان", "فیروزه", "فیض آباد", "قاسم آباد", "قدمگاه", "قلندرآباد", "قوچان", "کاخک", "کاریز", "کاشمر", "کدکن", "کلات", "کندر", "گلمکان", "گناباد", "لطف آباد", "مزدآوند", "مشهد", "ملک آباد", "نشتیفان", "نصرآباد", "نقاب", "نوخندان", "نیشابور", "نیل شهر", "همت آباد", "یونسی"],
+    "خراسان شمالی": ["اسفراین", "ایور", "آشخانه", "بجنورد", "پیش قلعه", "تیتکانلو", "جاجرم", "حصارگرمخان", "درق", "راز", "سنخواست", "شوقان", "شیروان", "صفی آباد", "فاروج", "قاضی", "گرمه", "لوجلی"],
+    "خوزستان": ["اروندکنار", "الوان", "امیدیه", "اندیمشک", "اهواز", "ایذه", "آبادان", "آغاجاری", "باغ ملک", "بستان", "بندرامام خمینی", "بندرماهشهر", "بهبهان", "ترکالکی", "جایزان", "چمران", "چویبده", "حر", "حسینیه", "حمزه", "حمیدیه", "خرمشهر", "دارخوین", "دزآب", "دزفول", "دهدز", "رامشیر", "رامهرمز", "رفیع", "زهره", "سالند", "سردشت", "سوسنگرد", "شادگان", "شاوور", "شرافت", "شوش", "شوشتر", "شیبان", "صالح شهر", "صفی آباد", "صیدون", "قلعه تل", "قلعه خواجه", "گتوند", "لالی", "مسجدسلیمان", "ملاثانی", "میانرود", "مینوشهر", "هفتگل", "هندیجان", "هویزه", "ویس"],
+    "زنجان": ["ابهر", "ارمغان خانه", "آب بر", "چورزق", "حلب", "خرمدره", "دندی", "زرین آباد", "زرین رود", "زنجان", "سجاس", "سلطانیه", "سهرورد", "صائین قلعه", "قیدار", "گرماب", "ماه نشان", "هیدج"],
+    "سمنان": ["امیریه", "ایوانکی", "آرادان", "بسطام", "بیارجمند", "دامغان", "درجزین", "دیباج", "سرخه", "سمنان", "شاهرود", "شهمیرزاد", "کلاته خیج", "گرمسار", "مجن", "مهدی شهر", "میامی"],
+    "سیستان و بلوچستان": ["ادیمی", "اسپکه", "ایرانشهر", "بزمان", "بمپور", "بنت", "بنجار", "پیشین", "جالق", "چابهار", "خاش", "دوست محمد", "راسک", "زابل", "زابلی", "زاهدان", "زهک", "سراوان", "سرباز", "سوران", "سیرکان", "علی اکبر", "فنوج", "قصرقند", "کنارک", "گشت", "گلمورتی", "محمدان", "محمدآباد", "محمدی", "میرجاوه", "نصرت آباد", "نگور", "نوک آباد", "نیک شهر", "هیدوچ"],
+    "فارس": ["اردکان", "ارسنجان", "استهبان", "اشکنان", "افزر", "اقلید", "امام شهر", "اهل", "اوز", "ایج", "ایزدخواست", "آباده", "آباده طشک", "باب انار", "بالاده", "بنارویه", "بهمن", "بوانات", "بیرم", "بیضا", "جنت شهر", "جهرم", "جویم", "زرین دشت", "حسن آباد", "خان زنیان", "خاوران", "خرامه", "خشت", "خنج", "خور", "داراب", "داریان", "دبیران", "دژکرد", "دهرم", "دوبرجی", "رامجرد", "رونیز", "زاهدشهر", "زرقان", "سده", "سروستان", "سعادت شهر", "سورمق", "سیدان", "ششده", "شهرپیر", "شهرصدرا", "شیراز", "صغاد", "صفاشهر", "علامرودشت", "فدامی", "فراشبند", "فسا", "فیروزآباد", "قائمیه", "قادرآباد", "قطب آباد", "قطرویه", "قیر", "کارزین (فتح آباد)", "کازرون", "کامفیروز", "کره ای", "کنارتخته", "کوار", "گراش", "گله دار", "لار", "لامرد", "لپویی", "لطیفی", "مبارک آباددیز", "مرودشت", "مشکان", "مصیری", "مهر", "میمند", "نوبندگان", "نوجین", "نودان", "نورآباد", "نی ریز", "وراوی"],
+    "قزوین": ["ارداق", "اسفرورین", "اقبالیه", "الوند", "آبگرم", "آبیک", "آوج", "بوئین زهرا", "بیدستان", "تاکستان", "خاکعلی", "خرمدشت", "دانسفهان", "رازمیان", "سگزآباد", "سیردان", "شال", "شریفیه", "ضیاآباد", "قزوین", "کوهین", "محمدیه", "محمودآباد نمونه", "معلم کلایه", "نرجه"],
+    "قم": ["جعفریه", "دستجرد", "سلفچگان", "قم", "قنوات", "کهک"],
+    "کردستان": ["آرمرده", "بابارشانی", "بانه", "بلبان آباد", "بوئین سفلی", "بیجار", "چناره", "دزج", "دلبران", "دهگلان", "دیواندره", "زرینه", "سروآباد", "سریش آباد", "سقز", "سنندج", "شویشه", "صاحب", "قروه", "کامیاران", "کانی دینار", "کانی سور", "مریوان", "موچش", "یاسوکند"],
+    "کرمان": ["اختیارآباد", "ارزوئیه", "امین شهر", "انار", "اندوهجرد", "باغین", "بافت", "بردسیر", "بروات", "بزنجان", "بم", "بهرمان", "پاریز", "جبالبارز", "جوپار", "جوزم", "جیرفت", "چترود", "خاتون آباد", "خانوک", "خورسند", "درب بهشت", "دهج", "رابر", "راور", "راین", "رفسنجان", "رودبار", "ریحان شهر", "زرند", "زنگی آباد", "زیدآباد", "سیرجان", "شهداد", "شهربابک", "صفائیه", "عنبرآباد", "فاریاب", "فهرج", "قلعه گنج", "کاظم آباد", "کرمان", "کشکوئیه", "کهنوج", "کوهبنان", "کیانشهر", "گلباف", "گلزار", "لاله زار", "ماهان", "محمدآباد", "محی آباد", "مردهک", "مس سرچشمه", "منوجان", "نجف شهر", "نرماشیر", "نظام شهر", "نگار", "نودژ", "هجدک", "یزدان شهر"],
+    "کرمانشاه": ["ازگله", "اسلام آباد غرب", "باینگان", "بیستون", "پاوه", "تازه آباد", "جوان رود", "حمیل", "ماهیدشت", "روانسر", "سرپل ذهاب", "سرمست", "سطر", "سنقر", "سومار", "شاهو", "صحنه", "قصرشیرین", "کرمانشاه", "کرندغرب", "کنگاور", "کوزران", "گهواره", "گیلانغرب", "میان راهان", "نودشه", "نوسود", "هرسین", "هلشی"],
+    "کهگیلویه و بویراحمد": ["باشت", "پاتاوه", "چرام", "چیتاب", "دهدشت", "دوگنبدان", "دیشموک", "سوق", "سی سخت", "قلعه رئیسی", "گراب سفلی", "لنده", "لیکک", "مادوان", "مارگون", "یاسوج"],
+    "گلستان": ["انبارآلوم", "اینچه برون", "آزادشهر", "آق قلا", "بندرترکمن", "بندرگز", "جلین", "خان ببین", "دلند", "رامیان", "سرخنکلاته", "سیمین شهر", "علی آباد کتول", "فاضل آباد", "کردکوی", "کلاله", "گالیکش", "گرگان", "گمیش تپه", "گنبدکاووس", "مراوه", "مینودشت", "نگین شهر", "نوده خاندوز", "نوکنده"],
+    "لرستان": ["ازنا", "اشترینان", "الشتر", "الیگودرز", "بروجرد", "پلدختر", "چالانچولان", "چغلوندی", "چقابل", "خرم آباد", "درب گنبد", "دورود", "زاغه", "سپیددشت", "سراب دوره", "فیروزآباد", "کونانی", "کوهدشت", "گراب", "معمولان", "مومن آباد", "نورآباد", "ویسیان"],
+    "گیلان": ["احمدسرگوراب", "اسالم", "اطاقور", "املش", "آستارا", "آستانه اشرفیه", "بازار جمعه", "بره سر", "بندرانزلی", "پره سر", "پیربازار", "تالش", "توتکابن", "جیرنده", "چابکسر", "چاف و چمخاله", "چوبر", "حویق", "خشکبیجار", "خمام", "دیلمان", "زیباکنار", "رانکوه", "رحیم آباد", "رستم آباد", "رشت", "رضوانشهر", "رودبار", "رودبنه", "رودسر", "سنگر", "سیاهکل", "شفت", "شلمان", "صومعه سرا", "فومن", "کلاچای", "کوچصفهان", "کومله", "کیاشهر", "گوراب زرمیخ", "لاهیجان", "لشت نشا", "لنگرود", "لوشان", "لولمان", "لوندویل", "لیسار", "ماسال", "ماسوله", "مرجقل", "منجیل", "واجارگاه"],
+    "مازندران": ["امیرکلا", "ایزدشهر", "آلاشت", "آمل", "بابل", "بابلسر", "بلده", "بهشهر", "بهنمیر", "پل سفید", "تنکابن", "جویبار", "چالوس", "چمستان", "خرم آباد", "خلیل شهر", "خوش رودپی", "دابودشت", "رامسر", "رستمکلا", "رویان", "رینه", "زرگرمحله", "زیرآب", "سادات شهر", "ساری", "سرخرود", "سلمان شهر", "سورک", "شیرگاه", "شیرود", "عباس آباد", "فریدونکنار", "فریم", "قائم شهر", "کتالم", "کلارآباد", "کلاردشت", "کله بست", "کوهی خیل", "کیاسر", "کیاکلا", "گتاب", "گزنک", "گلوگاه", "محمودآباد", "مرزن آباد", "مرزیکلا", "نشتارود", "نکا", "نور", "نوشهر"],
+    "مرکزی": ["اراک", "آستانه", "آشتیان", "پرندک", "تفرش", "توره", "جاورسیان", "خشکرود", "خمین", "خنداب", "داودآباد", "دلیجان", "رازقان", "زاویه", "ساروق", "ساوه", "سنجان", "شازند", "غرق آباد", "فرمهین", "قورچی باشی", "کرهرود", "کمیجان", "مامونیه", "محلات", "مهاجران", "میلاجرد", "نراق", "نوبران", "نیمور", "هندودر"],
+    "هرمزگان": ["ابوموسی", "بستک", "بندرجاسک", "بندرچارک", "بندرخمیر", "بندرعباس", "بندرلنگه", "بیکا", "پارسیان", "تخت", "جناح", "حاجی آباد", "درگهان", "دهبارز", "رویدر", "زیارتعلی", "سردشت", "سندرک", "سوزا", "سیریک", "فارغان", "فین", "قشم", "قلعه قاضی", "کنگ", "کوشکنار", "کیش", "گوهران", "میناب", "هرمز", "هشتبندی"],
+    "همدان": ["ازندریان", "اسدآباد", "برزول", "بهار", "تویسرکان", "جورقان", "جوکار", "دمق", "رزن", "زنگنه", "سامن", "سرکان", "شیرین سو", "صالح آباد", "فامنین", "فرسفج", "فیروزان", "قروه درجزین", "قهاوند", "کبودر آهنگ", "گل تپه", "گیان", "لالجین", "مریانج", "ملایر", "نهاوند", "همدان"],
+    "یزد": ["ابرکوه", "احمدآباد", "اردکان", "اشکذر", "بافق", "بفروئیه", "بهاباد", "تفت", "حمیدیا", "خضرآباد", "دیهوک", "رضوانشهر", "زارچ", "شاهدیه", "طبس", "عقدا", "مروست", "مهردشت", "مهریز", "میبد", "ندوشن", "نیر", "هرات", "یزد"]
+  };
+}
+export function Get2Digit(n) {
+  let ns = n.toString();
+  return ns.length === 1 ? '0' + ns : ns;
+}
 function svgArcRange(centerX, centerY, radius, angleInDegrees) {
   let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
   return {
@@ -1698,4 +1826,203 @@ export function svgArc(x, y, radius, startAngle, endAngle) {
   }
   let d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
   return d;
+}
+export class Storage {
+  constructor(id) {
+    _defineProperty(this, "model", void 0);
+    _defineProperty(this, "time", void 0);
+    _defineProperty(this, "init", void 0);
+    _defineProperty(this, "saveStorage", void 0);
+    _defineProperty(this, "getParent", void 0);
+    _defineProperty(this, "removeValueByField", void 0);
+    _defineProperty(this, "setValueByField", void 0);
+    _defineProperty(this, "getValueByField", void 0);
+    _defineProperty(this, "save", void 0);
+    _defineProperty(this, "remove", void 0);
+    _defineProperty(this, "load", void 0);
+    _defineProperty(this, "clear", void 0);
+    _defineProperty(this, "download", void 0);
+    _defineProperty(this, "export", void 0);
+    _defineProperty(this, "read", void 0);
+    _defineProperty(this, "import", void 0);
+    _defineProperty(this, "getModel", void 0);
+    this.init = () => {
+      let storage = localStorage.getItem('storageClass' + id);
+      let timeStorage = localStorage.getItem('storageClassTime' + id);
+      let model, time;
+      if (storage === undefined || storage === null) {
+        model = {};
+      } else {
+        model = JSON.parse(storage);
+      }
+      if (timeStorage === undefined || timeStorage === null) {
+        time = {};
+      } else {
+        time = JSON.parse(timeStorage);
+      }
+      this.model = model;
+      this.time = time;
+      this.saveStorage(model, time);
+    };
+    this.saveStorage = (model, time) => {
+      localStorage.setItem('storageClass' + id, JSON.stringify(model));
+      localStorage.setItem('storageClassTime' + id, JSON.stringify(time));
+    };
+    this.getParent = field => {
+      let fields = field.split('.');
+      let parent = this.model;
+      for (let i = 0; i < fields.length - 1; i++) {
+        parent = parent[fields[i]];
+        if (typeof parent !== 'object') {
+          return;
+        }
+      }
+      return parent;
+    };
+    this.removeValueByField = field => {
+      let fields = field.split('.');
+      let parent = this.getParent(field);
+      let lastField = fields[fields.length - 1];
+      let newParent = {};
+      for (let prop in parent) {
+        if (prop !== lastField) {
+          newParent[prop] = parent[prop];
+        }
+      }
+      fields.pop();
+      return this.setValueByField(fields.join('.'), newParent);
+    };
+    this.setValueByField = (field, value) => {
+      if (!field) {
+        this.model = value;
+        return;
+      }
+      var fields = field.split('.');
+      var parent = this.model;
+      for (let i = 0; i < fields.length - 1; i++) {
+        let f = fields[i];
+        if (parent[f] === undefined) {
+          parent[f] = {};
+        }
+        parent = parent[f];
+      }
+      parent[fields[fields.length - 1]] = value;
+      return this.getValueByField(fields[0]);
+    };
+    this.getValueByField = field => {
+      let fields = field.split('.');
+      let model = this.model;
+      let parent = {
+        ...model
+      };
+      for (let i = 0; i < fields.length - 1; i++) {
+        parent = parent[fields[i]];
+        if (typeof parent !== 'object') {
+          return;
+        }
+      }
+      return parent[fields[fields.length - 1]];
+    };
+    this.save = (field, value) => {
+      try {
+        value = JSON.parse(JSON.stringify(value));
+      } catch {
+        value = value;
+      }
+      if (!field || field === null) {
+        return;
+      }
+      let res = this.setValueByField(field, value);
+      this.time[field] = new Date().getTime();
+      this.saveStorage(this.model, this.time);
+      return res;
+    };
+    this.remove = (field, callback = () => {}) => {
+      let res = this.removeValueByField(field);
+      let newTime = {};
+      for (let prop in this.time) {
+        if (prop !== field) {
+          newTime[prop] = this.time[prop];
+        }
+      }
+      this.time = newTime;
+      this.saveStorage(this.model, this.time);
+      callback();
+      return res;
+    };
+    this.load = (field, def, time) => {
+      let value = this.getValueByField(field);
+      if (time && value !== undefined) {
+        let thisTime = new Date().getTime();
+        let lastTime = this.time[field] || thisTime;
+        let dif = Math.abs(thisTime - lastTime);
+        if (dif > time) {
+          value = undefined;
+        }
+      }
+      if (value === undefined && def !== undefined) {
+        value = typeof def === 'function' ? def() : def;
+        this.save(field, def);
+      }
+      return value;
+    };
+    this.clear = () => {
+      this.model = {};
+      this.time = {};
+      this.saveStorage(this.model, this.time);
+    };
+    this.download = (file, name) => {
+      if (!name || name === null) {
+        return;
+      }
+      let text = JSON.stringify(file);
+      let element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', name);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    };
+    this.export = () => {
+      let name = window.prompt('Please Inter File Name');
+      if (name === null || !name) {
+        return;
+      }
+      this.download({
+        model: this.model,
+        time: this.time
+      }, name);
+    };
+    this.read = (file, callback = () => {}) => {
+      var fr = new FileReader();
+      fr.onload = () => {
+        try {
+          callback(JSON.parse(fr.result));
+        } catch {
+          return;
+        }
+      };
+      fr.readAsText(file);
+    };
+    this.import = (file, callback = () => {}) => {
+      this.read(file, obj => {
+        if (obj === undefined) {
+          return;
+        }
+        let {
+          model,
+          time
+        } = obj;
+        this.model = model;
+        this.time = time;
+        this.saveStorage(this.model, this.time);
+        callback();
+      });
+    };
+    this.getModel = () => {
+      return JSON.parse(JSON.stringify(this.model));
+    };
+    this.init();
+  }
 }
