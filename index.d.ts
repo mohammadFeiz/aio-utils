@@ -1,3 +1,77 @@
+/// <reference types="react" />
+export type I_Date = string | number | Date | {
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
+    minute?: number;
+} | number[];
+export type I_point = number[];
+export type I_line = [I_point, I_point];
+export type I_dline = [number, number, number];
+export type I_dip = number;
+export type I_arc = {
+    x: number;
+    y: number;
+    r: number;
+    slice?: number[];
+};
+export type I_rect = [I_point, I_point];
+export declare function HasClass(target: any, className: string): any;
+export declare function DownloadFile(file: any): Promise<void>;
+export declare function GetFileUrl(file: any): string;
+export declare function Stall(stallTime?: number): Promise<void>;
+export declare function FileToBase64(file: any, callback: (result: any) => void): void;
+export declare function HandleBackButton(callback?: () => void): void;
+export declare function ParseString(str: string): any;
+export declare class DragClass {
+    dragIndex: number;
+    onChange: (list: any[], from: any, to: any) => void;
+    start: (e: any) => void;
+    over: (e: any) => void;
+    drop: (e: any, list: any[]) => void;
+    swap: (arr: any[], from: any, to: any) => any[];
+    className: string;
+    getAttrs: (list: any[], index: number) => void;
+    constructor(p: {
+        onChange: (list: any[], from: any, to: any) => void;
+        className: string;
+    });
+}
+export declare function GetClient(e: any): {
+    x: number;
+    y: number;
+};
+export declare function ExportToExcel(rows: any[], config?: any): void;
+export declare function SplitNumber(price: number, count?: number, splitter?: string): string;
+export declare function EventHandler(selector: string, event: 'mousedown' | 'mousemove' | 'mouseup' | 'click', action: any, type?: 'bind' | 'unbind'): void;
+export declare function getValueByStep(p: {
+    value: number;
+    start: number;
+    step: number;
+    end: number;
+}): number;
+export declare function URLToJSON(url: string): {
+    [key: string]: any;
+};
+export declare function FileSize(number: number): string;
+export declare function FilePreview(file: any, attrs?: any): React.ReactNode;
+export declare function JSXToHTML(jsx: any): string;
+export declare function Copy(text: any): Promise<void>;
+export declare function IsTouch(): boolean;
+export declare function Paste(): Promise<ClipboardItems>;
+export declare function Search(items: any[], searchValue: string, getValue?: (item: any, index: number) => any): any[];
+export declare function GenerateComponsition(p: {
+    level?: number;
+    length?: number;
+    childsField?: string;
+    fields: any;
+}): any[];
+export declare function CalculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number;
+export declare function getEventAttrs(eventType: 'onMouseDown' | 'onMouseMove' | 'onMouseUp', callback: (e: any) => void): {
+    [x: string]: (e: any) => void;
+};
+export declare function AddToAttrs(attrs: any, p: any): any;
 export type I_Swip_mousePosition = {
     x: number;
     y: number;
@@ -17,20 +91,27 @@ export type I_Swip_change = {
     deltaCenterAngle: number;
 };
 export type I_Swip_parameter = {
-    change?: I_Swip_change;
+    change: I_Swip_change;
     mousePosition: I_Swip_mousePosition;
     domLimit: I_Swip_domLimit;
     parentLimit: I_Swip_domLimit;
     event: any;
+    selectRect?: I_Swip_selectRect;
+    isInSelectRect?: I_Swip_isInSelectRect;
+};
+type I_Swip_selectRect_config = {
+    color?: string;
+    enable: () => boolean;
 };
 export type I_Swip = {
     dom: () => any;
     parent?: () => any;
     onClick?: (p: I_Swip_parameter) => void;
     page?: () => any;
-    start: (p: I_Swip_parameter) => number[];
-    move: (p: I_Swip_parameter) => void;
+    start?: (p: I_Swip_parameter) => number[];
+    move?: (p: I_Swip_parameter) => void;
     end?: (p: I_Swip_parameter) => void;
+    selectRect?: I_Swip_selectRect_config;
     speedX?: number;
     speedY?: number;
     stepX?: number | boolean;
@@ -54,75 +135,18 @@ export type I_Swip_domLimit = {
     right: number;
     bottom: number;
 };
-export type I_Date = string | number | Date | {
-    year?: number;
-    month?: number;
-    day?: number;
-    hour?: number;
-    minute?: number;
-} | number[];
-export type I_point = number[];
-export type I_line = [I_point, I_point];
-export type I_dline = [number, number, number];
-export type I_dip = number;
-export type I_arc = {
-    x: number;
-    y: number;
-    r: number;
-    slice?: [number, number];
+type I_Swip_isInSelectRect = (x: number, y: number) => boolean;
+type I_Swip_getIsInSelectrect = (selectRect: I_Swip_selectRect) => I_Swip_isInSelectRect;
+export type I_Swip_selectRect = {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
 };
-export type I_rect = [I_point, I_point];
-export declare function DownloadUrl(url: string, name: string): Promise<void>;
-export declare function Stall(stallTime?: number): Promise<void>;
-export declare function FileToBase64(file: any, callback?: (result: any) => void): void;
-export declare function HandleBackButton(callback?: () => void): void;
-export declare class DragClass {
-    dragIndex: number;
-    onChange: (list: any[], from: any, to: any) => void;
-    start: (e: any) => void;
-    over: (e: any) => void;
-    drop: (e: any, list: any[]) => void;
-    swap: (arr: any[], from: any, to: any) => any[];
-    className: string;
-    getAttrs: (list: any[], index: number) => void;
-    constructor(p: {
-        onChange: (list: any[], from: any, to: any) => void;
-        className: string;
-    });
-}
-export declare function GetClient(e: any): {
-    x: number;
-    y: number;
+export type I_Swip_tempSelectRect = {
+    left: number;
+    top: number;
 };
-export declare function ExportToExcel(rows: any[], config?: any): void;
-export declare function SplitNumber(price: number, count?: number, splitter?: string): string;
-export declare function EventHandler(selector: any, event: any, action: any, type?: string): void;
-export declare function getValueByStep({ value, start, step, end }: {
-    value: any;
-    start: any;
-    step: any;
-    end: any;
-}): any;
-export declare function URLToJSON(url: string): {
-    [key: string]: any;
-};
-export declare function JSXToHTML(jsx: any): string;
-export declare function Copy(text: any): Promise<void>;
-export declare function IsTouch(): boolean;
-export declare function Paste(): Promise<ClipboardItems>;
-export declare function Search(items: any[], searchValue: string, getValue?: (item: any, index: number) => any): any[];
-export declare function GenerateComponsition({ level: maxLevel, length, childsField, fields }: {
-    level?: number;
-    length?: number;
-    childsField?: string;
-    fields?: {};
-}): any[];
-export declare function CalculateDistance(lat1: any, lon1: any, lat2: any, lon2: any): number;
-export declare function getEventAttrs(eventType: 'onMouseDown' | 'onMouseMove' | 'onMouseUp', callback: any): {
-    [x: string]: any;
-};
-export declare function AddToAttrs(attrs: any, p: any): any;
-export declare function JsonValidator(json: any, schema: any): any;
 export declare class Swip {
     p: I_Swip;
     geo: Geo;
@@ -145,6 +169,8 @@ export declare class Swip {
         };
         x?: number;
         y?: number;
+        sr?: I_Swip_selectRect;
+        tsr?: I_Swip_tempSelectRect;
     };
     getPercentByValue: (value: number, start: number, end: number) => number;
     getMousePosition: (e: any) => I_Swip_mousePosition;
@@ -157,6 +183,13 @@ export declare class Swip {
     getPage: () => any;
     isMoving: boolean;
     centerAngle: number;
+    defaultLimit: I_Swip_domLimit;
+    addSelectRect: (x: number, y: number) => void;
+    setSelectRect: (width: number, height: number) => void;
+    removeSelectRect: () => void;
+    selectRect?: I_Swip_selectRect_config;
+    getIsInSelectRect: I_Swip_getIsInSelectrect;
+    defaultChange: I_Swip_change;
     constructor(p: I_Swip);
 }
 export declare class AIODate {
@@ -192,7 +225,7 @@ export declare class AIODate {
         second: number;
         tenthsecond: number;
         miliseconds: number;
-        type: 'ramaining' | 'passed';
+        type: 'remaining' | 'passed' | 'now';
     };
     convertMiliseconds: (miliseconds: number, unit?: 'day' | 'hour' | 'minute' | 'second' | 'tenthsecond' | 'milisecond') => {
         day: number;
@@ -201,7 +234,7 @@ export declare class AIODate {
         second: number;
         tenthsecond: number;
         miliseconds: number;
-        type: 'ramaining' | 'passed';
+        type: 'remaining' | 'passed' | 'now';
     };
     getDaysOfMonth: (date: I_Date, pattern?: string) => any[];
     getLastDayOfMonth: (date: I_Date) => any[];
@@ -282,7 +315,7 @@ export declare function GetCities(): {
     یزد: string[];
 };
 export declare function Get2Digit(n: number): string;
-export declare function svgArc(x: any, y: any, radius: any, startAngle: any, endAngle: any): string;
+export declare function svgArc(x: number, y: number, radius: number, startAngle: number, endAngle: number): string;
 type I_storage_model = {
     [key: string]: any;
 };
@@ -294,7 +327,7 @@ export declare class Storage {
     time: I_storage_time;
     init: () => void;
     saveStorage: (model: I_storage_model, time: I_storage_time) => void;
-    getParent: (field: string) => I_storage_model;
+    getParent: (field: string) => I_storage_model | undefined;
     removeValueByField: (field: string) => I_storage_model;
     setValueByField: (field: string, value: any) => I_storage_model;
     getValueByField: (field: string) => any;
