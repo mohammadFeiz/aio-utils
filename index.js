@@ -1,1 +1,2353 @@
-import*as t from"react-dom/server";import e from"jquery";import{jsx as i}from"react/jsx-runtime";function _defineProperty(t,e,i){return(e=_toPropertyKey(e))in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function _toPropertyKey(t){var e=_toPrimitive(t,"string");return"symbol"==typeof e?e:String(e)}function _toPrimitive(t,e){if("object"!=typeof t||null===t)return t;var i=t[Symbol.toPrimitive];if(void 0!==i){var r=i.call(t,e||"default");if("object"!=typeof r)return r;throw TypeError("@@toPrimitive must return a primitive value.")}return("string"===e?String:Number)(t)}export function HasClass(t,e){return t.hasClass(e)||!!t.parents(`.${e}`).length}export async function DownloadFile(t){let e=t.name;fetch(GetFileUrl(t),{mode:"no-cors"}).then(t=>t.blob()).then(t=>{let i=GetFileUrl(t),r=document.createElement("a");r.style.display="none",r.href=i,r.download=e,document.body.appendChild(r),r.click(),window.URL.revokeObjectURL(i)}).catch(()=>alert("oh no!"))}export function GetFileUrl(t){return window.URL.createObjectURL(t)}export async function Stall(t=3e3){await new Promise(e=>setTimeout(e,t))}export function FileToBase64(t,e){let i=new FileReader;i.onload=()=>e(i.result),i.readAsDataURL(t)}export function HandleBackButton(t=()=>{}){window.history.pushState({},""),window.history.pushState({},""),window.onpopstate=function(e){window.history.pushState({},""),t()}}export function ParseString(t){try{if(t.startsWith("{")||t.startsWith("["))return JSON.parse(t);if(t.startsWith("'")&&t.endsWith("'")||t.startsWith('"')&&t.endsWith('"'))return t.slice(1,-1);{let e=parseFloat(t);return isNaN(e)?t:e}}catch{return t}}export class DragClass{constructor(t){_defineProperty(this,"dragIndex",void 0),_defineProperty(this,"onChange",void 0),_defineProperty(this,"start",void 0),_defineProperty(this,"over",void 0),_defineProperty(this,"drop",void 0),_defineProperty(this,"swap",void 0),_defineProperty(this,"className",void 0),_defineProperty(this,"getAttrs",void 0),this.dragIndex=0,this.className=t.className,this.onChange=t.onChange,this.start=t=>{this.dragIndex=parseInt(e(t.target).attr("data-index"))},this.over=t=>{t.preventDefault()},this.drop=(t,i)=>{t.stopPropagation();let r=this.dragIndex,s=e(t.target);if(s.hasClass(this.className)||(s=s.parents(`.${this.className}`)),!s.hasClass(this.className))return;let n=parseInt(s.attr("data-index"));if(r!==n&&"function"==typeof this.onChange){let o=this.swap(i,r,n);this.onChange(o,i[r],i[n])}},this.swap=(t,e,i)=>{if(i===e+1){let r=i;i=e,e=r}let s=t.map((t,e)=>(t._testswapindex=e,t)),n=s[e]._testswapindex;return s.splice(i,0,{...s[e],_testswapindex:!1}),s.filter(t=>t._testswapindex!==n)},this.getAttrs=(t,e)=>({"data-index":e,onDragStart:this.start,onDragOver:this.over,onDrop:e=>this.drop(e,t),draggable:!0})}}export function GetClient(t){return"ontouchstart"in document.documentElement&&t.changedTouches?{x:t.changedTouches[0].clientX,y:t.changedTouches[0].clientY}:{x:t.clientX,y:t.clientY}}export function ExportToExcel(t,e={}){let{promptText:i="Inter Excel File Name"}=e;return({fixPersianAndArabicNumbers(t){if("string"!=typeof t)return t;let e=[/۰/g,/۱/g,/۲/g,/۳/g,/۴/g,/۵/g,/۶/g,/۷/g,/۸/g,/۹/g],i=[/٠/g,/١/g,/٢/g,/٣/g,/٤/g,/٥/g,/٦/g,/٧/g,/٨/g,/٩/g],r;for(r=0;r<10;r++)t=t.replace(e[r],r.toString()).replace(i[r],r.toString());return t},getJSON(t){let e=[];for(let i=0;i<t.length;i++){let r=t[i],s={};for(let n in r)s[n]=this.fixPersianAndArabicNumbers(r[n]);e.push(s)}return e},export(){let e=window.prompt(i);if(!e||null===e||!e.length)return;var r=this.getJSON(t),s="object"!=typeof r?JSON.parse(r):r,n="";n+="\r\n\n";{let o="";for(let h in s[0])o+=h+",";n+=(o=o.slice(0,-1))+"\r\n"}for(var l=0;l<s.length;l++){let $="";for(let a in s[l])$+='"'+s[l][a]+'",';$.slice(0,$.length-1),n+=$+"\r\n"}if(""===n){alert("Invalid data");return}var d=e.replace(/ /g,"_"),g="data:text/csv;charset=utf-8,"+encodeURIComponent("\uFEFF"+n);let p=document.createElement("a");p.href=g,p.style="visibility:hidden",p.download=d+".csv",document.body.appendChild(p),p.click(),document.body.removeChild(p)}}).export()}export function SplitNumber(t,e,i){if(!t)return"";e=e||3,i=i||",";let r=t.toString(),s=r.indexOf(".");-1!==s&&(r=r.slice(0,s));let n="",o=0;for(let h=r.length-1;h>=0;h--)n=r[h]+n,o===e-1?(o=0,h>0&&(n=i+n)):o++;return n}export function EventHandler(t,i,r,s){s=s||"bind";let n="ontouchstart"in document.documentElement?({mousedown:"touchstart",mousemove:"touchmove",mouseup:"touchend",click:"click"})[i]:i;var o="string"==typeof t?"window"===t?e(window):e(t):t;o.unbind(n,r),"bind"===s&&o.bind(n,r)}export function getValueByStep(t){let{value:e,start:i,step:r,end:s}=t,n=Math.round((e-i)/r)*r+i;return n<i&&(n=i),n>s&&(n=s),n}export function URLToJSON(t){try{return JSON.parse(`{"${decodeURI(t.split("?")[1]).replace(/"/g,'\\"').replace(/&/g,'","').replace(/=/g,'":"')}"}`)}catch{return{}}}export function FileSize(t){return t<1024?`${t} bytes`:t>=1024&&t<1048576?`${(t/1024).toFixed(1)} KB`:t>=1048576?`${(t/1048576).toFixed(1)} MB`:void 0}function IsFileTypeValid(t){return["image/apng","image/bmp","image/gif","image/jpeg","image/pjpeg","image/png","image/svg+xml","image/tiff","image/webp","image/x-icon"].includes(t.type)}export function FilePreview(t,e){return IsFileTypeValid(t)?i("img",{src:GetFileUrl(t),alt:t.name,title:t.name,objectFit:"cover",...e}):null}export function JSXToHTML(e){return t.renderToStaticMarkup(e)}export async function Copy(t){window.navigator.clipboard.writeText(t)}export function IsTouch(){return"ontouchstart"in document.documentElement}export async function Paste(){try{return window.navigator.clipboard.read()}catch(t){console.log(t.message)}}export function Search(t,e,i=t=>t){if(!e)return t;let r=e.split(" ");return t.filter((t,e)=>(function t(e,i){for(let r=0;r<e.length;r++){let s=e[r];if(-1===i.indexOf(s))return!1}return!0})(r,i(t,e)))}export function GenerateComponsition(t){let{level:e=4,length:i=4,childsField:r="childs",fields:s={}}=t,n={generate(t=0,o=""){if(t>=e)return[];let h=[];for(let l=0;l<i;l++){let $=o+"-"+l,a={id:"aa"+Math.round(1e4*Math.random()),[r]:n.generate(t+1,$)};for(let d in s)a[d]=s[d]+o;h.push(a)}return h}};return n.generate()}export function CalculateDistance(t,e,i,r){let s=toRadians(i-t),n=toRadians(r-e),o=Math.sin(s/2)*Math.sin(s/2)+Math.cos(toRadians(t))*Math.cos(toRadians(i))*Math.sin(n/2)*Math.sin(n/2);return 6371*(2*Math.atan2(Math.sqrt(o),Math.sqrt(1-o)))}export function getEventAttrs(t,e){let i;return{[i=IsTouch()?({onMouseDown:"onTouchStart",onMouseMove:"onTouchMove",onMouseUp:"onTouchEnd"})[t]:t]:e}}function toRadians(t){return t*(Math.PI/180)}export function AddToAttrs(t,e){let{style:i}=e,r,s=[...(t=t||{}).className?t.className.split(" "):[],...(e.className?Array.isArray(e.className)?e.className:e.className.split(" "):[]).filter(t=>!!t)],n=s.length?s.join(" "):void 0,o={...t.style,...i};return{...t,className:n,style:o,...e.attrs}}export class Swip{constructor(t){_defineProperty(this,"p",void 0),_defineProperty(this,"geo",void 0),_defineProperty(this,"timeout",void 0),_defineProperty(this,"count",void 0),_defineProperty(this,"domLimit",void 0),_defineProperty(this,"parentLimit",void 0),_defineProperty(this,"getDom",void 0),_defineProperty(this,"getParent",void 0),_defineProperty(this,"init",void 0),_defineProperty(this,"dx",void 0),_defineProperty(this,"dy",void 0),_defineProperty(this,"cx",void 0),_defineProperty(this,"cy",void 0),_defineProperty(this,"dist",void 0),_defineProperty(this,"so",void 0),_defineProperty(this,"getPercentByValue",void 0),_defineProperty(this,"getMousePosition",void 0),_defineProperty(this,"click",void 0),_defineProperty(this,"mouseDown",void 0),_defineProperty(this,"mouseMove",void 0),_defineProperty(this,"mouseUp",void 0),_defineProperty(this,"getDOMLimit",void 0),_defineProperty(this,"change",void 0),_defineProperty(this,"getPage",void 0),_defineProperty(this,"isMoving",void 0),_defineProperty(this,"centerAngle",void 0),_defineProperty(this,"defaultLimit",void 0),_defineProperty(this,"addSelectRect",void 0),_defineProperty(this,"setSelectRect",void 0),_defineProperty(this,"removeSelectRect",void 0),_defineProperty(this,"selectRect",void 0),_defineProperty(this,"getIsInSelectRect",void 0),_defineProperty(this,"defaultChange",void 0);let{selectRect:i}=t;if(i){let{color:r="#96a9bc"}=i;this.selectRect={...i,color:r}}this.defaultChange={x:0,y:0,dx:0,dy:0,dist:0,angle:0,deltaCenterAngle:0},this.defaultLimit={width:0,height:0,left:0,top:0,right:0,bottom:0,centerX:0,centerY:0},this.domLimit=this.defaultLimit,this.parentLimit=this.defaultLimit,this.change={x:0,y:0,dx:0,dy:0,dist:0,angle:0,deltaCenterAngle:0},this.addSelectRect=()=>{},this.setSelectRect=()=>{},this.removeSelectRect=()=>{},this.so={},this.p=t,this.geo=new Geo,this.timeout=void 0,this.count=0,this.getDom=()=>t.dom(),this.getParent=()=>t.parent?t.parent():void 0,this.dx=0,this.dy=0,this.cx=0,this.cy=0,this.dist=0,this.isMoving=!1,this.centerAngle=0,this.init=()=>{if(this.count++,this.count>10){clearTimeout(this.timeout);return}this.getDom().length?(clearTimeout(this.timeout),EventHandler(this.getDom(),"mousedown",e.proxy(this.mouseDown,this)),t.onClick&&EventHandler(this.getDom(),"click",e.proxy(this.click,this))):this.timeout=setTimeout(()=>this.init(),400)},this.getPercentByValue=(t,e,i)=>100*(t-e)/(i-e),this.getPage=()=>{let{page:t}=this.p;return t?t():e(window)},this.getMousePosition=t=>{this.domLimit=this.getDOMLimit("dom");let e=this.getPage(),i=e.scrollTop(),r=e.scrollLeft(),s=GetClient(t),n=s.x-this.domLimit.left+r,o=s.y-this.domLimit.top+i,h=this.getPercentByValue(n,0,this.domLimit.width),l=this.getPercentByValue(o,0,this.domLimit.height),$=this.geo.getAngle([[this.domLimit.centerX,this.domLimit.centerY],[s.x,s.y]]);return{xp:h,yp:l,clientX:s.x,clientY:s.y,x:n,y:o,centerAngle:$}},this.getDOMLimit=t=>{let e="dom"===t?this.getDom():this.getParent(),i=e.offset(),r={width:e.width(),height:e.height(),left:i.left,top:i.top,centerX:0,centerY:0};return{...r,centerX:r.left+r.width/2,centerY:r.top+r.height/2,right:r.left+r.width,bottom:r.top+r.height}},this.click=e=>{if(this.isMoving)return;this.domLimit=this.getDOMLimit("dom"),this.parentLimit=t.parent?this.getDOMLimit("parent"):this.defaultLimit;let i=this.getMousePosition(e),r={mousePosition:i,domLimit:this.domLimit,parentLimit:this.parentLimit,event:e,change:this.defaultChange};t.onClick&&t.onClick(r)},this.addSelectRect=(t,e)=>{if(!this.selectRect||!this.selectRect.enable())return;let{color:i}=this.selectRect,r=this.getDom();this.so.tsr={left:t,top:e},this.removeSelectRect(),r.append(`<div class="swip-select-rect" style="border:1px dashed ${i};background:${i+"30"};left:${t}px;top:${e}px;position:absolute;width:0;height:0"></div>`)},this.setSelectRect=(t,e)=>{if(!this.selectRect||!this.selectRect.enable())return;let i=this.getDom().find(".swip-select-rect"),{tsr:r={left:0,top:0}}=this.so||{},s=r.left,n=r.top;t<0&&(s+=t,t=Math.abs(t)),e<0&&(n+=e,e=Math.abs(e));let o={left:s,top:n,width:t,height:e};this.so.sr=o,i.css(o)},this.removeSelectRect=()=>{if(this.selectRect&&this.selectRect.enable())this.getDom().find(".swip-select-rect").remove()},this.mouseDown=i=>{i.stopPropagation(),this.isMoving=!1,this.domLimit=this.getDOMLimit("dom"),this.parentLimit=t.parent?this.getDOMLimit("parent"):this.defaultLimit;let r=this.getMousePosition(i);this.centerAngle=r.centerAngle,this.cx=r.clientX,this.cy=r.clientY,this.so={client:{x:r.clientX,y:r.clientY}},this.addSelectRect(r.x,r.y);let s={mousePosition:r,domLimit:this.domLimit,parentLimit:this.parentLimit,event:i,change:this.defaultChange},n=(t.start||(()=>[0,0]))(s);if(!Array.isArray(n))return;let o=n[0],h=n[1];this.so={...this.so,x:o,y:h},EventHandler("window","mousemove",e.proxy(this.mouseMove,this)),EventHandler("window","mouseup",e.proxy(this.mouseUp,this))},this.mouseMove=t=>{t.stopPropagation();let{speedX:e=1,speedY:i=1,stepX:r=1,stepY:s=1,reverseX:n,reverseY:o,insideX:h,insideY:l}=this.p,$=this.getMousePosition(t),a=GetClient(t),d=a.x-this.cx,g=a.y-this.cy;d=Math.round(d*e)*(n?-1:1),g=Math.round(g*i)*(o?-1:1);let p=$.centerAngle-this.centerAngle;if("number"==typeof r&&(d=Math.round(d/r)*r),"number"==typeof s&&(g=Math.round(g/s)*s),d===this.dx&&g===this.dy)return;this.isMoving=!0,this.dx=d,this.dy=g,this.dist=Math.round(Math.sqrt(Math.pow(d,2)+Math.pow(g,2)));let f=this.geo.getAngle([[this.cx,this.cy],[a.x,a.y]]);this.setSelectRect(d,g);let u=0,c=0;if(void 0!==this.so.x&&void 0!==this.so.y){u=this.so.x+d,c=this.so.y+g;let{minX:y,minY:_,maxX:m,maxY:v}=this.p;void 0!==y&&u<y&&(u=y),void 0!==m&&u>m&&(u=m),void 0!==_&&c<_&&(c=_),void 0!==v&&c>v&&(c=v)}!0===r&&(u=Math.round(u/this.domLimit.width)*this.domLimit.width),!0===s&&(c=Math.round(c/this.domLimit.height)*this.domLimit.height),h&&(this.parentLimit?(u>this.parentLimit.width-this.domLimit.width&&(u=this.parentLimit.width-this.domLimit.width),u<0&&(u=0)):alert("Swip error => you set insideX prop but missing parent props")),l&&(this.parentLimit?(c>this.parentLimit.height-this.domLimit.height&&(c=this.parentLimit.height-this.domLimit.height),c<0&&(c=0)):alert("Swip error => you set insideY prop but missing parent props")),this.change={x:u,y:c,dx:d,dy:g,dist:this.dist,angle:f,deltaCenterAngle:p};let P={change:this.change,mousePosition:$,domLimit:this.domLimit,parentLimit:this.parentLimit,event:t,selectRect:this.so.sr,isInSelectRect:this.getIsInSelectRect(this.so.sr||{left:0,top:0,width:0,height:0})};this.p.move&&this.p.move(P)},this.getIsInSelectRect=t=>{let{left:e,top:i,width:r,height:s}=t;return(t,n)=>!(t<e)&&!(n<i)&&!(t>e+r)&&!(n>i+s)},this.mouseUp=t=>{t.stopPropagation(),EventHandler("window","mousemove",this.mouseMove,"unbind"),EventHandler("window","mouseup",this.mouseUp,"unbind"),setTimeout(()=>this.isMoving=!1,10);let e=this.getMousePosition(t);this.removeSelectRect();let i={change:this.change,event:t,domLimit:this.domLimit,parentLimit:this.parentLimit,mousePosition:e,selectRect:this.so.sr,isInSelectRect:this.getIsInSelectRect(this.so.sr||{left:0,top:0,width:0,height:0})};this.p.end&&this.p.end(i)},this.init()}}export class AIODate{constructor(){_defineProperty(this,"isMatch",void 0),_defineProperty(this,"convertToArray",void 0),_defineProperty(this,"isAny",void 0),_defineProperty(this,"isLess",void 0),_defineProperty(this,"isGreater",void 0),_defineProperty(this,"isEqual",void 0),_defineProperty(this,"isBetween",void 0),_defineProperty(this,"getWeekDay",void 0),_defineProperty(this,"isJalali",void 0),_defineProperty(this,"getWeekDays",void 0),_defineProperty(this,"toGregorian",void 0),_defineProperty(this,"toJalali",void 0),_defineProperty(this,"pattern",void 0),_defineProperty(this,"get2Digit",void 0),_defineProperty(this,"getMonths",void 0),_defineProperty(this,"getSplitter",void 0),_defineProperty(this,"getTime",void 0),_defineProperty(this,"getNextTime",void 0),_defineProperty(this,"getMonthDaysLength",void 0),_defineProperty(this,"getYearDaysLength",void 0),_defineProperty(this,"getDaysOfWeek",void 0),_defineProperty(this,"getDatesBetween",void 0),_defineProperty(this,"getDelta",void 0),_defineProperty(this,"convertMiliseconds",void 0),_defineProperty(this,"getDaysOfMonth",void 0),_defineProperty(this,"getLastDayOfMonth",void 0),_defineProperty(this,"getDateByPattern",void 0),_defineProperty(this,"getToday",void 0),_defineProperty(this,"getDayIndex",void 0),this.isMatch=(t,e)=>{t=this.convertToArray(t);for(let i=0;i<e.length;i++){let r=e[i],s,n;try{let o=r.split(",");s=o[0],n=o.slice(1,o.length)}catch{break}if("<"===s){for(let h=0;h<n.length;h++)if(this.isLess(t,n[h]))return!0}else if(">"===s){for(let l=0;l<n.length;l++)if(this.isGreater(t,n[l]))return!0}else if("<="===s){for(let $=0;$<n.length;$++)if(this.isEqual(t,n[$])||this.isLess(t,n[$]))return!0}else if(">="===s){for(let a=0;a<n.length;a++)if(this.isEqual(t,n[a])||this.isGreater(t,n[a]))return!0}else if("="===s){for(let d=0;d<n.length;d++)if(this.isEqual(t,n[d]))return!0}else if("!="===s){for(let g=0;g<n.length;g++)if(!this.isEqual(t,n[g]))return!0}else if("<>"===s){if(n[0]&&n[1]){let p,f;if(this.isLess(n[0],n[1])?(p=n[0],f=n[1]):(p=n[1],f=n[0]),this.isGreater(t,p)&&this.isLess(t,f))return!0}}else if("<=>"===s){if(n[0]&&n[1]){let u,c;if(this.isLess(n[0],n[1])?(u=n[0],c=n[1]):(u=n[1],c=n[0]),this.isGreater(t,u)&&this.isLess(t,c)||this.isEqual(t,u)||this.isEqual(t,c))return!0}}else if("!<>"===s){if(n[0]&&n[1]){let y,_;if(this.isLess(n[0],n[1])?(y=n[0],_=n[1]):(y=n[1],_=n[0]),!this.isGreater(t,y)||!this.isLess(t,_))return!0}}else if("!<=>"===s){if(n[0]&&n[1]){let m,v;if(this.isLess(n[0],n[1])?(m=n[0],v=n[1]):(m=n[1],v=n[0]),!this.isEqual(t,m)&&!this.isEqual(t,v)&&(this.isLess(t,m)||this.isGreater(t,v)))return!0}}else if("w"===s){let P=this.getWeekDay(t).index;for(let L=0;L<n.length;L++)if(P===+n[L])return!0}else if("!w"===s){let D=this.getWeekDay(t).index;for(let x=0;x<n.length;x++)if(D!==+n[x])return!0}}return!1},this.convertToArray=(t,e)=>{if(!t)return[];let i;if(Array.isArray(t))i=[...t];else if("string"==typeof t){if(-1!==t.indexOf("T")){let[r,s]=t.split("T"),n=s.split(".")[0].split(":");i=[...r.split("-").map(t=>+t),...n.map(t=>+t),0]}else i=t.split(this.getSplitter(t)).map(t=>+t)}else if("number"==typeof t){let o=new Date(t),h=o.getFullYear(),l=o.getMonth()+1,$=o.getDate(),a=o.getHours(),d=o.getMinutes(),g;i=[h,l,$,a,d,o.getSeconds(),Math.round(o.getMilliseconds()/100)]}else{if("object"!=typeof t)return[];if("number"==typeof t.year){let p=t;return[p.year,p.month,p.day,p.hour]}{let f=t,u=f.getFullYear(),c=f.getMonth()+1,y=f.getDate(),_=f.getHours(),m=f.getMinutes(),v;i=[u,c,y,_,m,f.getSeconds(),Math.round(f.getMilliseconds()/100)]}}if(e){let[P,L,D]=this.toJalali([i[0],i[1],i[2]]);i[0]=P,i[1]=L,i[2]=D}return i},this.isAny=(t,e,i)=>{if(!t||!e)return!1;t=this.convertToArray(t),e=this.convertToArray(e);let r="equal";for(let s=0;s<t.length;s++){isNaN(e[s])&&(e[s]=t[s]);let n=t[s],o=e[s]||0;n<o&&(r="less"),n>o&&(r="greater")}return r===i},this.isLess=(t,e)=>this.isAny(t,e,"less"),this.isEqual=(t,e)=>this.isAny(t,e,"equal"),this.isGreater=(t,e)=>this.isAny(t,e,"greater"),this.isBetween=(t,[e,i])=>this.isAny(t,e,"greater")&&this.isAny(t,i,"less"),this.getWeekDay=t=>{let e=this.convertToArray(t),i=this.isJalali(e);e=this.toGregorian(t);let r=new Date(e[0],e[1]-1,e[2]).getDay();return i&&(r+=1,r%=7),{weekDay:this.getWeekDays(i)[r],index:r}},this.isJalali=t=>this.convertToArray(t)[0]<1700,this.getWeekDays=t=>[["شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه"],["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"]][t?0:1],this.toGregorian=t=>{var e,i,r,s,n;if(!t)return[];let o=this.convertToArray(t);if(!this.isJalali(o))return o;let[h,l,$]=o;for(h+=1595,i=400*~~((n=-355668+365*h+8*~~(h/33)+~~((h%33+3)/4)+$+(l<7?(l-1)*31:(l-7)*30+186))/146097),(n%=146097)>36524&&(i+=100*~~(--n/36524),(n%=36524)>=365&&n++),i+=4*~~(n/1461),(n%=1461)>365&&(i+=~~((n-1)/365),n=(n-1)%365),s=n+1,e=[0,31,i%4==0&&i%100!=0||i%400==0?29:28,31,30,31,30,31,31,30,31,30,31],r=0;r<13&&s>e[r];r++)s-=e[r];return o[0]=i,o[1]=r,o[2]=s,o},this.pattern=(t,e,i=this.isJalali(t))=>{let[r,s,n,o,h,l,$]=t=this.convertToArray(t,i);if(e=e.replace("{year}",r.toString()),"number"==typeof s&&(e=e.replace("{month}",this.get2Digit(s))),"number"==typeof n&&(e=e.replace("{day}",this.get2Digit(n))),"number"==typeof o&&(e=e.replace("{hour}",this.get2Digit(o))),"number"==typeof h&&(e=e.replace("{minute}",this.get2Digit(h))),"number"==typeof l&&(e=e.replace("{second}",this.get2Digit(l))),"number"==typeof $&&(e=e.replace("{tenthsecond}",this.get2Digit($))),-1!==e.indexOf("{monthString}")&&(e=e.replace("{monthString}",this.getMonths(i)[s-1])),-1!==e.indexOf("{weekDay}")){let a=this.getWeekDays(i),{index:d}=this.getWeekDay(t);e=e.replace("{weekDay}",a[d])}return e},this.get2Digit=t=>{let e;try{e=t.toString()}catch{return t.toString()}return 1===e.length&&(e="0"+t),e},this.getMonths=t=>[["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"],["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]][t?0:1],this.toJalali=t=>{var e,i,r,s,n,o;let h=this.convertToArray(t);if(this.isJalali(h))return h;let[l,$,a]=h;return e=[0,31,59,90,120,151,181,212,243,273,304,334],n=$>2?l+1:l,i=-1595+33*~~((o=355666+365*l+~~((n+3)/4)-~~((n+99)/100)+~~((n+399)/400)+a+e[$-1])/12053),o%=12053,i+=4*~~(o/1461),(o%=1461)>365&&(i+=~~((o-1)/365),o=(o-1)%365),o<186?(r=1+~~(o/31),s=1+o%31):(r=7+~~((o-186)/30),s=1+(o-186)%30),h[0]=i,h[1]=r,h[2]=s,h},this.getSplitter=t=>{let e="/";for(let i=0;i<t.length;i++)if(isNaN(parseInt(t[i])))return t[i];return e},this.getTime=(t,e=this.isJalali(t))=>{if(!t)return 0;if("number"==typeof t)return t;let[i,r=1,s=1,n=0,o=0,h=0,l=0]=t=this.convertToArray(t);e&&(t=this.toGregorian([i,r,s,n,o,h,l]));let $=new Date(t[0],t[1]-1,t[2]).getTime();return $+=36e5*n,$+=6e4*o,$+=1e3*h,$+=100*l},this.getNextTime=(t,e,i=this.isJalali(t))=>{if(!e)return this.convertToArray(t);let r=this.getTime(t,i);r+=e;let s=this.convertToArray(r);if(i){let[n,o,h]=this.toJalali(s);s[0]=n,s[1]=o,s[2]=h}return s},this.getMonthDaysLength=t=>{if(!t)return 0;let[e,i]=this.convertToArray(t);return this.isJalali([e,i])?[31,31,31,31,31,31,30,30,30,30,30,-1===[1,5,9,13,17,22,26,30].indexOf(e%33)?29:30][i-1]:new Date(e,i-1,0).getDate()},this.getYearDaysLength=t=>{if(!t)return 0;let[e]=this.convertToArray(t),i=0;for(let r=1;r<=12;r++)i+=this.getMonthDaysLength([e,r]);return i},this.getDaysOfWeek=(t,e)=>{if(!t)return[];let i=this.convertToArray(t),{index:r}=this.getWeekDay(i),s=this.getNextTime([i[0],i[1],i[2]],-(864e5*(r+1))),n=this.getNextTime([i[0],i[1],i[2]],(7-r)*864e5);return this.getDatesBetween(s,n,864e5)},this.getDatesBetween=(t,e,i=864e5)=>{if(!t||!e||(t=this.convertToArray(t),e=this.convertToArray(e),!this.isGreater(e,t)))return[];let r=this.getDelta(t,e).miliseconds/i;if(isNaN(r)||r>1e3)return console.error("AIODate().getDatesBetween() => too many dates"),[];let s=this.getNextTime(t,i),n=[];for(;this.isLess(s,e);)n.push(s),s=this.getNextTime(s,i);return n},this.getDelta=(t,e,i)=>{let r=this.getTime(t)-this.getTime(e||this.getToday());return this.convertMiliseconds(-r,i)},this.convertMiliseconds=(t=0,e="day")=>{let i;t<0?(i="passed",t=-t):i=t>0?"remaining":"now";let r=["day","hour","minute","second","tenthsecond","milisecond"].indexOf(e),s=0,n=0,o=0,h=0,l=0,$=t;return r<=0&&(s=Math.floor($/864e5),$-=864e5*s),r<=1&&(n=Math.floor($/36e5),$-=36e5*n),r<=2&&(o=Math.floor($/6e4),$-=6e4*o),r<=3&&(h=Math.floor($/1e3),$-=1e3*h),r<=4&&(l=Math.floor($/100)),{day:s,hour:n,minute:o,second:h,tenthsecond:l,miliseconds:t,type:i}},this.getDaysOfMonth=(t,e)=>{let i=this.convertToArray(t),r=[i[0],i[1],1],s=this.getLastDayOfMonth(i),n=this.getDatesBetween(r,s,864e5),o=[r];return((o=o.concat(n)).push(s),e)?o.map(t=>this.getDateByPattern(t,e)):o},this.getLastDayOfMonth=t=>{let e=this.convertToArray(t),i=this.getMonthDaysLength(e);return[e[0],e[1],i]},this.getDateByPattern=(t,e)=>this.pattern(t,e),this.getToday=t=>{let e=new Date,i=[e.getFullYear(),e.getMonth()+1,e.getDate(),e.getHours(),e.getMinutes(),e.getSeconds(),Math.round(e.getMilliseconds()/100)];return t&&(i=this.toJalali(i)),i},this.getDayIndex=(t,e)=>{if(t=this.convertToArray(t),"week"===e){let i=this.getDaysOfWeek(t);for(let r=0;r<i.length;r++){let[s,n,o]=i[r];if(s===t[0]&&n===t[1]&&o===t[2])return r}}if("month"===e)return t[2]-1;if("year"===e){let h=0;for(let l=0;l<t[1]-1;l++)h+=this.getMonthDaysLength(t);return(h+=t[1])-1}return 0}}}export class Geo{constructor(){_defineProperty(this,"getAngle",void 0),_defineProperty(this,"getDipAngle",void 0),_defineProperty(this,"getLength",void 0),_defineProperty(this,"getPrepDip",void 0),_defineProperty(this,"getDip",void 0),_defineProperty(this,"getPrepFromLine",void 0),_defineProperty(this,"getLineBySLA",void 0),_defineProperty(this,"getArcByPoints",void 0),_defineProperty(this,"getAvg",void 0),_defineProperty(this,"getArcBy3Points",void 0),_defineProperty(this,"getYOnLineByX",void 0),_defineProperty(this,"getXOnLineByY",void 0),_defineProperty(this,"getMeet",void 0),_defineProperty(this,"getInnerMeet",void 0),_defineProperty(this,"getDLineByLine",void 0),_defineProperty(this,"getPointsByNGon",void 0),_defineProperty(this,"getLineByDLine",void 0),_defineProperty(this,"tri",void 0),_defineProperty(this,"getPrepToLine",void 0),_defineProperty(this,"getLineType",void 0),_defineProperty(this,"getLine",void 0),_defineProperty(this,"getDLine",void 0),_defineProperty(this,"setLineByLength",void 0),_defineProperty(this,"getParallelLine",void 0),_defineProperty(this,"getPointsByDivide",void 0),_defineProperty(this,"fix",void 0),_defineProperty(this,"setLineByAngle",void 0),_defineProperty(this,"getNumberByStep",void 0),_defineProperty(this,"setLineByOrtho",void 0),_defineProperty(this,"rotateSpline",void 0),_defineProperty(this,"isPointInPath",void 0),_defineProperty(this,"getDXF",void 0),this.getAngle=t=>{let[e,i]="DLine"===this.getLineType(t)?this.getLineByDLine(t):t,r=i[0]-e[0],s=i[1]-e[1],n=this.getLength([[0,0],[r,s]]),o=Math.acos(r/n)/Math.PI*180;return parseFloat((o=0>Math.sign(s)?360-o:o).toFixed(4))},this.getLineType=t=>Array.isArray(t[0])?"Line":"DLine",this.getLine=t=>"Line"===this.getLineType(t)?t:this.getLineByDLine(t),this.getDLine=t=>"DLine"===this.getLineType(t)?t:this.getDLineByLine(t),this.getDipAngle=t=>this.getAngle([0,0,t]),this.getLength=t=>Math.sqrt(Math.pow(t[0][0]-t[1][0],2)+Math.pow(t[0][1]-t[1][1],2)),this.getPrepDip=t=>-1/t,this.getDip=t=>{let e=this.getLine(t);return e[0][1]-e[1][1]/e[0][0]-e[1][0]},this.getLineByDLine=t=>{let[e,i]=t,r=this.getXOnLineByY(t,i+10),s=this.getYOnLineByX(t,r);return[[e,i],[r,s]]},this.getPrepFromLine=(t,e,i)=>{if(!i)return e;let r=this.getDLine(t),s=this.getAngle(r);return this.getLineBySLA(e,i,s-90)[1]},this.getPrepToLine=(t,e)=>{let i=this.getDLine(t),r=[e[0],e[1],this.getPrepDip(i[2])];return this.getMeet(i,r)},this.getLineBySLA=(t,e,i)=>e?[t,[t[0]+this.tri("cos",i)*e,t[1]+this.tri("sin",i)*e]]:[t,t],this.getArcByPoints=(t,e)=>{for(var i=[],r=[],s=0;s<t.length&&3!==s;s++){var n=t[s],o=n.toString();-1===r.indexOf(o)&&(r.push(o),i.push(n))}var h=i[0],l=i[1],$=i[2],a={x:0,y:0,r:0};if(1===i.length)a={r:0,x:h[0],y:h[1]};else if(2===i.length){let d=this.getAvg([h,l]),g=this.getDLineByLine([h,l]),p=this.getPrepFromLine(g,d,e||0);a=e?this.getArcBy3Points(h,p,l):{r:this.getLength([h,l])/2,x:d[0],y:d[1]}}else a=this.getArcBy3Points(h,l,$);return a},this.getAvg=t=>{for(var e=0,i=0,r=t.length,s=0;s<r;s++)e+=t[s][0],i+=t[s][1];return[e/r,i/r]},this.getArcBy3Points=(t,e,i)=>{let r=this.getPrepDip(this.getDip([t,e])),s=this.getPrepDip(this.getDip([e,i])),n=this.getAvg([t,e]),o=this.getAvg([e,i]),h=[n[0],n[1],r],l=[o[0],o[1],s],$=this.getMeet(h,l);if(!$)return{x:0,y:0,r:0};let a=$[0],d=$[1],g=this.getAngle([$,t]),p=this.getAngle([$,e]),f=this.getAngle([$,i]),u;return u=g<p&&p<f?[g,f]:p<f&&f<g?[g,f]:f<g&&g<p?[g,f]:f<p&&p<g?[f,g]:g<f&&f<p?[f,g]:p<g&&g<f?[f,g]:[0,0],{x:a,y:d,r:this.getLength([t,[a,d]]),slice:u}},this.getDLineByLine=t=>{let[e]=t;return[e[0],e[1],this.getDip(t)]},this.getMeet=(t,e)=>{let i=this.getDLine(t),r=this.getDLine(e),[s,n,o]=i,[h,l,$]=r;if(o===$)return!1;if(Math.abs(o)===1/0)return[s,this.getYOnLineByX(r,s)];if(Math.abs($)===1/0)return[h,this.getYOnLineByX(i,h)];var a=(o*s-$*h+l-n)/(o-$),d=o*(a-s)+n;return[a,d]},this.getInnerMeet=(t,e)=>{let i=this.getMeet(t,e);if(!1===i)return!1;if(e[0][0]<e[1][0]){if(i[0]<e[0][0]||i[0]>e[1][0])return!1}else if(i[0]<e[1][0]||i[0]>e[0][0])return!1;if(e[0][1]<e[1][1]){if(i[1]<e[0][1]||i[1]>e[1][1])return!1}else if(i[1]<e[1][1]||i[1]>e[0][1])return!1;if(t[0][0]<t[1][0]){if(i[0]<t[0][0]||i[0]>t[1][0])return!1}else if(i[0]<t[1][0]||i[0]>t[0][0])return!1;if(t[0][1]<t[1][1]){if(i[1]<t[0][1]||i[1]>t[1][1])return!1}else if(i[1]<t[1][1]||i[1]>t[0][1])return!1;return i},this.getYOnLineByX=(t,e)=>{let[i,r,s]=this.getDLine(t);return s===1/0?0:s*(e-i)+r},this.getXOnLineByY=(t,e)=>{let[i,r,s]=this.getDLine(t);return 0===s?0:s===1/0?i:(e-r)/s+i},this.tri=(t,e)=>Math[t](e*Math.PI/180),this.getPointsByNGon=(t,e,i)=>{let r=180-360/e,s=2*+(this.tri("cos",r/2)*t).toFixed(6),n=+(this.tri("sin",r/2)*t).toFixed(6),o=[0,-n,i],h=[0+s/2,-n,i],l=[o,h],$=360/e;for(let a=0;a<e-1;a++){let d=[l[a+1][0]+this.tri("cos",$)*s,l[a+1][1]+this.tri("sin",$)*s,i];$+=360/e,l.push(d)}return l.push(o),l},this.setLineByLength=(t,e,i="end")=>{let r=[0,0],s=[0,0],n=this.getAngle(t);if("center"===i){let o=this.getAvg(t),h=this.getLineBySLA(o,e/2,n+180),l=this.getLineBySLA(o,e/2,n);r=h[1],s=l[1]}else if("end"===i){r=t[0];s=this.getLineBySLA(r,e,n)[1]}else if("start"===i){s=t[1];r=this.getLineBySLA(s,e,n+180)[1]}return[r,s]},this.getParallelLine=(t,e)=>{let i=[],r=t.length;if(2===r){let s=this.getPrepFromLine([t[0],t[1]],t[0],e),n=this.getPrepFromLine([t[0],t[1]],t[1],e);return[s,n]}for(var o=1;o<=r;o++){var h=t[o];if(o===r)break;var l=t[o-1],$=this.getPrepFromLine([l,h],l,e),a=this.getPrepFromLine([l,h],h,e);i.push([$,a])}let d=[];r=i.length;for(let g=0;g<r;g++){let p=i[g],f=i[g-1];if(0===g){t.push([p[0][0],p[0][1]]);continue}let u=this.getMeet(f,p);u&&d.push(u),g===r-1&&t.push([p[1][0],p[1][1]])}return d},this.getPointsByDivide=(t,e)=>{let[i,r]=t,s=this.fix(r[0]-i[0]),n=this.fix(r[1]-i[1]),o=s/e,h=n/e,l=[];for(let $=1;$<e;$++)l.push([i[0]+$*o,i[1]+$*h]);return l},this.fix=t=>parseFloat(t.toFixed(6)),this.setLineByAngle=(t,e)=>{let i=this.getLength(t);return i?(e%=360,this.getLineBySLA([t[0][0],t[0][1]],i,e)):t},this.getNumberByStep=(t,e)=>Math.round(t/e)*e,this.setLineByOrtho=(t,e)=>this.setLineByAngle(t,this.getNumberByStep(this.getAngle(t),e)),this.rotateSpline=(t,e,i)=>{let r=JSON.parse(JSON.stringify(t));for(var s=0;s<r.length;s++){let n=r[s],o=[[...i],[n[0],n[1]]],h=this.getAngle(o);o=this.setLineByAngle(o,e+h),n[0]=o[1][0],n[1]=o[1][1]}return r},this.isPointInPath=(t,e)=>{let i=0;for(let r=0;r<t.length;r++){let s=t[r],n;n=r===t.length-1?t[0]:t[r+1];!1!==this.getInnerMeet([[e[0],e[1]],[9999999999,e[1]]],[[s[0],s[1]],[n[0],n[1]]])&&i++}return i%2!=0},this.getDXF=(t=[])=>{var e={line:function(t){let[e,i]=t,r="";return r+("LINE\r\n8\r\n1\r\n62\r\n0\r\n10\r\n"+e[0]+"\r\n20\r\n"+-1*e[1]+"\r\n30\r\n0.0\r\n11\r\n"+i[0]+"\r\n21\r\n"+-1*i[1]+"\r\n31\r\n0.0\r\n0\r\n")},rect:function(t){let[e,i]=t;var r="";return r+=this.line([[e[0],e[1]],[i[0],i[1]]]),r+=this.line([[i[0],e[1]],[i[0],i[1]]]),r+=this.line([[i[0],i[1]],[e[0],i[1]]]),r+=this.line([[e[0],i[1]],[e[0],e[1]]])},arc:function(t){let{x:e,y:i,r,slice:s=[0,360]}=t,n="";return n+="ARC\r\n8\r\n1\r\n62\r\n0\r\n10\r\n"+e+"\r\n20\r\n"+-1*i+"\r\n30\r\n0.0\r\n40\r\n"+r+"\r\n50\r\n"+s[0]+"\r\n51\r\n"+s[1]+"\r\n0\r\n",t}};let i="";for(let r=0;r<t.length;r++){var{type:s,obj:n}=t[r];i+=e[s](n)}var o="0\r\nSECTION\r\n2\r\nENTITIES\r\n0\r\n";return o+=i,o+="ENDSEC\r\n0\r\nEOF"}}}export function GetCities(){return{"آذربایجان شرقی":["اسکو","اهر","ایلخچی","آبش احمد","آذرشهر","آقکند","باسمنج","بخشایش","بستان آباد","بناب","بناب جدید","تبریز","ترک","ترکمانچای","تسوج","تیکمه داش","جلفا","خاروانا","خامنه","خراجو","خسروشهر","خضرلو","خمارلو","خواجه","دوزدوزان","زرنق","زنوز","سراب","سردرود","سهند","سیس","سیه رود","شبستر","شربیان","شرفخانه","شندآباد","صوفیان","عجب شیر","قره آغاج","کشکسرای","کلوانق","کلیبر","کوزه کنان","گوگان","لیلان","مراغه","مرند","ملکان","ملک کیان","ممقان","مهربان","میانه","نظرکهریزی","هادی شهر","هرگلان","هریس","هشترود","هوراند","وایقان","ورزقان","یامچی"],"آذربایجان غربی":["ارومیه","اشنویه","ایواوغلی","آواجیق","باروق","بازرگان","بوکان","پلدشت","پیرانشهر","تازه شهر","تکاب","چهاربرج","خوی","دیزج دیز","ربط","سردشت","سرو","سلماس","سیلوانه","سیمینه","سیه چشمه","شاهین دژ","شوط","فیرورق","قره ضیاءالدین","قطور","قوشچی","کشاورز","گردکشانه","ماکو","محمدیار","محمودآباد","مهاباد","میاندوآب","میرآباد","نالوس","نقده","نوشین"],اردبیل:["اردبیل","اصلاندوز","آبی بیگلو","بیله سوار","پارس آباد","تازه کند","تازه کندانگوت","جعفرآباد","خلخال","رضی","سرعین","عنبران","فخرآباد","کلور","کوراییم","گرمی","گیوی","لاهرود","مشگین شهر","نمین","نیر","هشتجین","هیر"],اصفهان:["ابریشم","ابوزیدآباد","اردستان","اژیه","اصفهان","افوس","انارک","ایمانشهر","آران وبیدگل","بادرود","باغ بهادران","بافران","برزک","برف انبار","بهاران شهر","بهارستان","بوئین و میاندشت","پیربکران","تودشک","تیران","جندق","جوزدان","جوشقان و کامو","چادگان","چرمهین","چمگردان","حبیب آباد","حسن آباد","حنا","خالدآباد","خمینی شهر","خوانسار","خور","خورزوق","داران","دامنه","درچه","دستگرد","دهاقان","دهق","دولت آباد","دیزیچه","رزوه","رضوانشهر","زاینده رود","زرین شهر","زواره","زیباشهر","سده لنجان","سفیدشهر","سگزی","سمیرم","شاهین شهر","شهرضا","طالخونچه","عسگران","علویجه","فرخی","فریدونشهر","فلاورجان","فولادشهر","قمصر","قهجاورستان","قهدریجان","کاشان","کرکوند","کلیشاد و سودرجان","کمشچه","کمه","کهریزسنگ","کوشک","کوهپایه","گرگاب","گزبرخوار","گلپایگان","گلدشت","گلشهر","گوگد","لای بید","مبارکه","مجلسی","محمدآباد","مشکات","منظریه","مهاباد","میمه","نائین","نجف آباد","نصرآباد","نطنز","نوش آباد","نیاسر","نیک آباد","هرند","ورزنه","ورنامخواست","وزوان","ونک"],البرز:["اسارا","اشتهارد","تنکمان","تهران دشت","چهارباغ","ساوجبلاغ","سعید آباد","شهر جدید هشتگرد","طالقان","فردیس","کرج","کردان","کمال شهر","کوهسار","گرمدره","گلبهار","ماهدشت","محمدشهر","مشکین دشت","نظرآباد","هشتگرد"],ایلام:["ارکواز","ایلام","ایوان","آبدانان","آسمان آباد","بدره","پهله","توحید","چوار","دره شهر","دلگشا","دهلران","زرنه","سراب باغ","سرابله","صالح آباد","لومار","مهران","مورموری","موسیان","میمه"],بوشهر:["امام حسن","انارستان","اهرم","آب پخش","آبدان","برازجان","بردخون","بندردیر","بندردیلم","بندرریگ","بندرکنگان","بندرگناوه","بنک","بوشهر","تنگ ارم","جم","چغادک","خارک","خورموج","دالکی","دلوار","ریز","سعدآباد","سیراف","شبانکاره","شنبه","عسلویه","کاکی","کلمه","نخل تقی","وحدتیه"],تهران:["ارجمند","اسلامشهر","اندیشه","آبسرد","آبعلی","باغستان","باقرشهر","بومهن","پاکدشت","پردیس","پرند","پیشوا","تهران","جوادآباد","چهاردانگه","حسن آباد","دماوند","دیزین","شهر ری","رباط کریم","رودهن","شاهدشهر","شریف آباد","شمشک","شهریار","صالح آباد","صباشهر","صفادشت","فردوسیه","فشم","فیروزکوه","قدس","قرچک","قیامدشت","کهریزک","کیلان","گلستان","لواسان","مارلیک","ملارد","میگون","نسیم شهر","نصیرآباد","وحیدیه","ورامین"],"چهارمحال و بختیاری":["اردل","آلونی","باباحیدر","بروجن","بلداجی","بن","جونقان","چلگرد","سامان","سفیددشت","سودجان","سورشجان","شلمزار","شهرکرد","طاقانک","فارسان","فرادنبه","فرخ شهر","کیان","گندمان","گهرو","لردگان","مال خلیفه","ناغان","نافچ","نقنه","هفشجان"],"خراسان جنوبی":["ارسک","اسدیه","اسفدن","اسلامیه","آرین شهر","آیسک","بشرویه","بیرجند","حاجی آباد","خضری دشت بیاض","خوسف","زهان","سرایان","سربیشه","سه قلعه","شوسف","طبس ","فردوس","قاین","قهستان","محمدشهر","مود","نهبندان","نیمبلوک"],"خراسان رضوی":["احمدآباد صولت","انابد","باجگیران","باخرز","بار","بایگ","بجستان","بردسکن","بیدخت","بینالود","تایباد","تربت جام","تربت حیدریه","جغتای","جنگل","چاپشلو","چکنه","چناران","خرو","خلیل آباد","خواف","داورزن","درگز","در رود","دولت آباد","رباط سنگ","رشتخوار","رضویه","روداب","ریوش","سبزوار","سرخس","سفیدسنگ","سلامی","سلطان آباد","سنگان","شادمهر","شاندیز","ششتمد","شهرآباد","شهرزو","صالح آباد","طرقبه","عشق آباد","فرهادگرد","فریمان","فیروزه","فیض آباد","قاسم آباد","قدمگاه","قلندرآباد","قوچان","کاخک","کاریز","کاشمر","کدکن","کلات","کندر","گلمکان","گناباد","لطف آباد","مزدآوند","مشهد","ملک آباد","نشتیفان","نصرآباد","نقاب","نوخندان","نیشابور","نیل شهر","همت آباد","یونسی"],"خراسان شمالی":["اسفراین","ایور","آشخانه","بجنورد","پیش قلعه","تیتکانلو","جاجرم","حصارگرمخان","درق","راز","سنخواست","شوقان","شیروان","صفی آباد","فاروج","قاضی","گرمه","لوجلی"],خوزستان:["اروندکنار","الوان","امیدیه","اندیمشک","اهواز","ایذه","آبادان","آغاجاری","باغ ملک","بستان","بندرامام خمینی","بندرماهشهر","بهبهان","ترکالکی","جایزان","چمران","چویبده","حر","حسینیه","حمزه","حمیدیه","خرمشهر","دارخوین","دزآب","دزفول","دهدز","رامشیر","رامهرمز","رفیع","زهره","سالند","سردشت","سوسنگرد","شادگان","شاوور","شرافت","شوش","شوشتر","شیبان","صالح شهر","صفی آباد","صیدون","قلعه تل","قلعه خواجه","گتوند","لالی","مسجدسلیمان","ملاثانی","میانرود","مینوشهر","هفتگل","هندیجان","هویزه","ویس"],زنجان:["ابهر","ارمغان خانه","آب بر","چورزق","حلب","خرمدره","دندی","زرین آباد","زرین رود","زنجان","سجاس","سلطانیه","سهرورد","صائین قلعه","قیدار","گرماب","ماه نشان","هیدج"],سمنان:["امیریه","ایوانکی","آرادان","بسطام","بیارجمند","دامغان","درجزین","دیباج","سرخه","سمنان","شاهرود","شهمیرزاد","کلاته خیج","گرمسار","مجن","مهدی شهر","میامی"],"سیستان و بلوچستان":["ادیمی","اسپکه","ایرانشهر","بزمان","بمپور","بنت","بنجار","پیشین","جالق","چابهار","خاش","دوست محمد","راسک","زابل","زابلی","زاهدان","زهک","سراوان","سرباز","سوران","سیرکان","علی اکبر","فنوج","قصرقند","کنارک","گشت","گلمورتی","محمدان","محمدآباد","محمدی","میرجاوه","نصرت آباد","نگور","نوک آباد","نیک شهر","هیدوچ"],فارس:["اردکان","ارسنجان","استهبان","اشکنان","افزر","اقلید","امام شهر","اهل","اوز","ایج","ایزدخواست","آباده","آباده طشک","باب انار","بالاده","بنارویه","بهمن","بوانات","بیرم","بیضا","جنت شهر","جهرم","جویم","زرین دشت","حسن آباد","خان زنیان","خاوران","خرامه","خشت","خنج","خور","داراب","داریان","دبیران","دژکرد","دهرم","دوبرجی","رامجرد","رونیز","زاهدشهر","زرقان","سده","سروستان","سعادت شهر","سورمق","سیدان","ششده","شهرپیر","شهرصدرا","شیراز","صغاد","صفاشهر","علامرودشت","فدامی","فراشبند","فسا","فیروزآباد","قائمیه","قادرآباد","قطب آباد","قطرویه","قیر","کارزین (فتح آباد)","کازرون","کامفیروز","کره ای","کنارتخته","کوار","گراش","گله دار","لار","لامرد","لپویی","لطیفی","مبارک آباددیز","مرودشت","مشکان","مصیری","مهر","میمند","نوبندگان","نوجین","نودان","نورآباد","نی ریز","وراوی"],قزوین:["ارداق","اسفرورین","اقبالیه","الوند","آبگرم","آبیک","آوج","بوئین زهرا","بیدستان","تاکستان","خاکعلی","خرمدشت","دانسفهان","رازمیان","سگزآباد","سیردان","شال","شریفیه","ضیاآباد","قزوین","کوهین","محمدیه","محمودآباد نمونه","معلم کلایه","نرجه"],قم:["جعفریه","دستجرد","سلفچگان","قم","قنوات","کهک"],کردستان:["آرمرده","بابارشانی","بانه","بلبان آباد","بوئین سفلی","بیجار","چناره","دزج","دلبران","دهگلان","دیواندره","زرینه","سروآباد","سریش آباد","سقز","سنندج","شویشه","صاحب","قروه","کامیاران","کانی دینار","کانی سور","مریوان","موچش","یاسوکند"],کرمان:["اختیارآباد","ارزوئیه","امین شهر","انار","اندوهجرد","باغین","بافت","بردسیر","بروات","بزنجان","بم","بهرمان","پاریز","جبالبارز","جوپار","جوزم","جیرفت","چترود","خاتون آباد","خانوک","خورسند","درب بهشت","دهج","رابر","راور","راین","رفسنجان","رودبار","ریحان شهر","زرند","زنگی آباد","زیدآباد","سیرجان","شهداد","شهربابک","صفائیه","عنبرآباد","فاریاب","فهرج","قلعه گنج","کاظم آباد","کرمان","کشکوئیه","کهنوج","کوهبنان","کیانشهر","گلباف","گلزار","لاله زار","ماهان","محمدآباد","محی آباد","مردهک","مس سرچشمه","منوجان","نجف شهر","نرماشیر","نظام شهر","نگار","نودژ","هجدک","یزدان شهر"],کرمانشاه:["ازگله","اسلام آباد غرب","باینگان","بیستون","پاوه","تازه آباد","جوان رود","حمیل","ماهیدشت","روانسر","سرپل ذهاب","سرمست","سطر","سنقر","سومار","شاهو","صحنه","قصرشیرین","کرمانشاه","کرندغرب","کنگاور","کوزران","گهواره","گیلانغرب","میان راهان","نودشه","نوسود","هرسین","هلشی"],"کهگیلویه و بویراحمد":["باشت","پاتاوه","چرام","چیتاب","دهدشت","دوگنبدان","دیشموک","سوق","سی سخت","قلعه رئیسی","گراب سفلی","لنده","لیکک","مادوان","مارگون","یاسوج"],گلستان:["انبارآلوم","اینچه برون","آزادشهر","آق قلا","بندرترکمن","بندرگز","جلین","خان ببین","دلند","رامیان","سرخنکلاته","سیمین شهر","علی آباد کتول","فاضل آباد","کردکوی","کلاله","گالیکش","گرگان","گمیش تپه","گنبدکاووس","مراوه","مینودشت","نگین شهر","نوده خاندوز","نوکنده"],لرستان:["ازنا","اشترینان","الشتر","الیگودرز","بروجرد","پلدختر","چالانچولان","چغلوندی","چقابل","خرم آباد","درب گنبد","دورود","زاغه","سپیددشت","سراب دوره","فیروزآباد","کونانی","کوهدشت","گراب","معمولان","مومن آباد","نورآباد","ویسیان"],گیلان:["احمدسرگوراب","اسالم","اطاقور","املش","آستارا","آستانه اشرفیه","بازار جمعه","بره سر","بندرانزلی","پره سر","پیربازار","تالش","توتکابن","جیرنده","چابکسر","چاف و چمخاله","چوبر","حویق","خشکبیجار","خمام","دیلمان","زیباکنار","رانکوه","رحیم آباد","رستم آباد","رشت","رضوانشهر","رودبار","رودبنه","رودسر","سنگر","سیاهکل","شفت","شلمان","صومعه سرا","فومن","کلاچای","کوچصفهان","کومله","کیاشهر","گوراب زرمیخ","لاهیجان","لشت نشا","لنگرود","لوشان","لولمان","لوندویل","لیسار","ماسال","ماسوله","مرجقل","منجیل","واجارگاه"],مازندران:["امیرکلا","ایزدشهر","آلاشت","آمل","بابل","بابلسر","بلده","بهشهر","بهنمیر","پل سفید","تنکابن","جویبار","چالوس","چمستان","خرم آباد","خلیل شهر","خوش رودپی","دابودشت","رامسر","رستمکلا","رویان","رینه","زرگرمحله","زیرآب","سادات شهر","ساری","سرخرود","سلمان شهر","سورک","شیرگاه","شیرود","عباس آباد","فریدونکنار","فریم","قائم شهر","کتالم","کلارآباد","کلاردشت","کله بست","کوهی خیل","کیاسر","کیاکلا","گتاب","گزنک","گلوگاه","محمودآباد","مرزن آباد","مرزیکلا","نشتارود","نکا","نور","نوشهر"],مرکزی:["اراک","آستانه","آشتیان","پرندک","تفرش","توره","جاورسیان","خشکرود","خمین","خنداب","داودآباد","دلیجان","رازقان","زاویه","ساروق","ساوه","سنجان","شازند","غرق آباد","فرمهین","قورچی باشی","کرهرود","کمیجان","مامونیه","محلات","مهاجران","میلاجرد","نراق","نوبران","نیمور","هندودر"],هرمزگان:["ابوموسی","بستک","بندرجاسک","بندرچارک","بندرخمیر","بندرعباس","بندرلنگه","بیکا","پارسیان","تخت","جناح","حاجی آباد","درگهان","دهبارز","رویدر","زیارتعلی","سردشت","سندرک","سوزا","سیریک","فارغان","فین","قشم","قلعه قاضی","کنگ","کوشکنار","کیش","گوهران","میناب","هرمز","هشتبندی"],همدان:["ازندریان","اسدآباد","برزول","بهار","تویسرکان","جورقان","جوکار","دمق","رزن","زنگنه","سامن","سرکان","شیرین سو","صالح آباد","فامنین","فرسفج","فیروزان","قروه درجزین","قهاوند","کبودر آهنگ","گل تپه","گیان","لالجین","مریانج","ملایر","نهاوند","همدان"],یزد:["ابرکوه","احمدآباد","اردکان","اشکذر","بافق","بفروئیه","بهاباد","تفت","حمیدیا","خضرآباد","دیهوک","رضوانشهر","زارچ","شاهدیه","طبس","عقدا","مروست","مهردشت","مهریز","میبد","ندوشن","نیر","هرات","یزد"]}}export function Get2Digit(t){let e=t.toString();return 1===e.length?"0"+e:e}function svgArcRange(t,e,i,r){let s=(r-90)*Math.PI/180;return{x:t+i*Math.cos(s),y:e+i*Math.sin(s)}}export function svgArc(t,e,i,r,s){(r===s||s-r==360)&&(r=0,s=360),360===r&&(r=359.99),360===s&&(s=359.99);let n=svgArcRange(t,e,i,s),o=svgArcRange(t,e,i,r),h;return h=s-r<-180?"0":s-r<0?"1":s-r<=180?"0":s-r<=360?"1":"0",["M",n.x,n.y,"A",i,i,0,h,0,o.x,o.y].join(" ")}export class Storage{constructor(t){_defineProperty(this,"model",void 0),_defineProperty(this,"time",void 0),_defineProperty(this,"init",void 0),_defineProperty(this,"saveStorage",void 0),_defineProperty(this,"getParent",void 0),_defineProperty(this,"removeValueByField",void 0),_defineProperty(this,"setValueByField",void 0),_defineProperty(this,"getValueByField",void 0),_defineProperty(this,"save",void 0),_defineProperty(this,"remove",void 0),_defineProperty(this,"load",void 0),_defineProperty(this,"clear",void 0),_defineProperty(this,"download",void 0),_defineProperty(this,"export",void 0),_defineProperty(this,"read",void 0),_defineProperty(this,"import",void 0),_defineProperty(this,"getModel",void 0),this.model={},this.time={},this.init=()=>{let e=localStorage.getItem("storageClass"+t),i=localStorage.getItem("storageClassTime"+t),r,s;r=null==e?{}:JSON.parse(e),s=null==i?{}:JSON.parse(i),this.model=r,this.time=s,this.saveStorage(r,s)},this.saveStorage=(e,i)=>{localStorage.setItem("storageClass"+t,JSON.stringify(e)),localStorage.setItem("storageClassTime"+t,JSON.stringify(i))},this.getParent=t=>{let e=t.split("."),i=this.model;for(let r=0;r<e.length-1;r++)if("object"!=typeof(i=i[e[r]]))return;return i},this.removeValueByField=t=>{let e=t.split("."),i=this.getParent(t),r=e[e.length-1],s={};for(let n in i)n!==r&&(s[n]=i[n]);return e.pop(),this.setValueByField(e.join("."),s)},this.setValueByField=(t,e)=>{if(!t){this.model=e;return}var i=t.split("."),r=this.model;for(let s=0;s<i.length-1;s++){let n=i[s];void 0===r[n]&&(r[n]={}),r=r[n]}return r[i[i.length-1]]=e,this.getValueByField(i[0])},this.getValueByField=t=>{let e=t.split("."),i={...this.model};for(let r=0;r<e.length-1;r++)if("object"!=typeof(i=i[e[r]]))return;return i[e[e.length-1]]},this.save=(t,e)=>{try{e=JSON.parse(JSON.stringify(e))}catch{}if(!t||null===t)return{};let i=this.setValueByField(t,e);return this.time[t]=new Date().getTime(),this.saveStorage(this.model,this.time),i},this.remove=(t,e=()=>{})=>{let i=this.removeValueByField(t),r={};for(let s in this.time)s!==t&&(r[s]=this.time[s]);return this.time=r,this.saveStorage(this.model,this.time),e(),i},this.load=(t,e,i)=>{let r=this.getValueByField(t);if(i&&void 0!==r){let s=new Date().getTime(),n=this.time[t]||s;Math.abs(s-n)>i&&(r=void 0)}return void 0===r&&void 0!==e&&(r="function"==typeof e?e():e,this.save(t,e)),r},this.clear=()=>{this.model={},this.time={},this.saveStorage(this.model,this.time)},this.download=(t,e)=>{if(!e||null===e)return;let i=JSON.stringify(t),r=document.createElement("a");r.setAttribute("href","data:text/plain;charset=utf-8,"+encodeURIComponent(i)),r.setAttribute("download",e),r.style.display="none",document.body.appendChild(r),r.click(),document.body.removeChild(r)},this.export=()=>{let t=window.prompt("Please Inter File Name");null!==t&&t&&this.download({model:this.model,time:this.time},t)},this.read=(t,e=()=>{})=>{var i=new FileReader;i.onload=()=>{try{e(JSON.parse(i.result))}catch{return}},i.readAsText(t)},this.import=(t,e=()=>{})=>{this.read(t,t=>{if(void 0===t)return;let{model:i,time:r}=t;this.model=i,this.time=r,this.saveStorage(this.model,this.time),e()})},this.getModel=()=>JSON.parse(JSON.stringify(this.model)),this.init()}}
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+import * as ReactDOMServer from 'react-dom/server';
+import $ from 'jquery';
+
+//x,y,dip
+import { jsx as _jsx } from "react/jsx-runtime";
+export function HasClass(target, className) {
+  return target.hasClass(className) || !!target.parents(`.${className}`).length;
+}
+export async function DownloadFile(file) {
+  let name = file.name;
+  let url = GetFileUrl(file);
+  fetch(url, {
+    mode: 'no-cors'
+  }).then(resp => resp.blob()).then(blob => {
+    let url = GetFileUrl(blob);
+    let a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }).catch(() => alert('oh no!'));
+}
+export function GetFileUrl(file) {
+  return window.URL.createObjectURL(file);
+}
+export async function Stall(stallTime = 3000) {
+  await new Promise(resolve => setTimeout(resolve, stallTime));
+}
+export function FileToBase64(file, callback) {
+  const fileReader = new FileReader();
+  fileReader.onload = () => callback(fileReader.result);
+  fileReader.readAsDataURL(file);
+}
+export function GetPrecisionCount(number) {
+  // Convert the number to a string
+  number = number || 0;
+  const numberString = number.toString();
+  const decimalIndex = numberString.indexOf('.');
+  if (decimalIndex === -1) {
+    return 0;
+  }
+  return numberString.length - decimalIndex - 1;
+}
+export function HandleBackButton(callback = () => {}) {
+  window.history.pushState({}, '');
+  window.history.pushState({}, '');
+  window.onpopstate = function (event) {
+    window.history.pushState({}, '');
+    callback();
+  };
+}
+export function ParseString(str) {
+  // Check if the string starts and ends with a quote character
+  try {
+    if (str.startsWith("{") || str.startsWith('[')) {
+      return JSON.parse(str);
+    } else if (str.startsWith("'") && str.endsWith("'") || str.startsWith('"') && str.endsWith('"')) {
+      return str.slice(1, -1);
+    } else {
+      let res = parseFloat(str);
+      return isNaN(res) ? str : res;
+    }
+  } catch {
+    return str;
+  }
+}
+export class DragClass {
+  constructor(p) {
+    _defineProperty(this, "dragIndex", void 0);
+    _defineProperty(this, "onChange", void 0);
+    _defineProperty(this, "start", void 0);
+    _defineProperty(this, "over", void 0);
+    _defineProperty(this, "drop", void 0);
+    _defineProperty(this, "swap", void 0);
+    _defineProperty(this, "className", void 0);
+    _defineProperty(this, "getAttrs", void 0);
+    this.dragIndex = 0;
+    this.className = p.className;
+    this.onChange = p.onChange;
+    this.start = e => {
+      this.dragIndex = parseInt($(e.target).attr('data-index'));
+    };
+    this.over = e => {
+      e.preventDefault();
+    };
+    this.drop = (e, list) => {
+      e.stopPropagation();
+      let from = this.dragIndex,
+        dom = $(e.target);
+      if (!dom.hasClass(this.className)) {
+        dom = dom.parents(`.${this.className}`);
+      }
+      ;
+      if (!dom.hasClass(this.className)) {
+        return;
+      }
+      ;
+      let to = parseInt(dom.attr('data-index'));
+      if (from === to) {
+        return;
+      }
+      if (typeof this.onChange === 'function') {
+        let newList = this.swap(list, from, to);
+        this.onChange(newList, list[from], list[to]);
+      }
+    };
+    this.swap = (arr, from, to) => {
+      if (to === from + 1) {
+        let a = to;
+        to = from;
+        from = a;
+      }
+      let Arr = arr.map((o, i) => {
+        o._testswapindex = i;
+        return o;
+      });
+      let fromIndex = Arr[from]._testswapindex;
+      Arr.splice(to, 0, {
+        ...Arr[from],
+        _testswapindex: false
+      });
+      return Arr.filter(o => o._testswapindex !== fromIndex);
+    };
+    this.getAttrs = (list, index) => {
+      return {
+        ['data-index']: index,
+        onDragStart: this.start,
+        onDragOver: this.over,
+        onDrop: e => this.drop(e, list),
+        draggable: true
+      };
+    };
+  }
+}
+export function GetClient(e) {
+  return 'ontouchstart' in document.documentElement && e.changedTouches ? {
+    x: e.changedTouches[0].clientX,
+    y: e.changedTouches[0].clientY
+  } : {
+    x: e.clientX,
+    y: e.clientY
+  };
+}
+export function ExportToExcel(rows, config = {}) {
+  let {
+    promptText = 'Inter Excel File Name'
+  } = config;
+  let o = {
+    fixPersianAndArabicNumbers(str) {
+      if (typeof str !== 'string') {
+        return str;
+      }
+      let persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g],
+        arabicNumbers = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+      let i;
+      for (i = 0; i < 10; i++) {
+        str = str.replace(persianNumbers[i], i.toString()).replace(arabicNumbers[i], i.toString());
+      }
+      return str;
+    },
+    getJSON(rows) {
+      let result = [];
+      for (let i = 0; i < rows.length; i++) {
+        let json = rows[i],
+          fixedJson = {};
+        for (let prop in json) {
+          fixedJson[prop] = this.fixPersianAndArabicNumbers(json[prop]);
+        }
+        result.push(fixedJson);
+      }
+      return result;
+    },
+    export() {
+      let name = window.prompt(promptText);
+      if (!name || name === null || !name.length) {
+        return;
+      }
+      ;
+      var data = this.getJSON(rows);
+      var arrData = typeof data != "object" ? JSON.parse(data) : data;
+      var CSV = "";
+      CSV += '\r\n\n';
+      if (true) {
+        let row = "";
+        for (let index in arrData[0]) {
+          row += index + ",";
+        }
+        row = row.slice(0, -1);
+        CSV += row + "\r\n";
+      }
+      for (var i = 0; i < arrData.length; i++) {
+        let row = "";
+        for (let index in arrData[i]) {
+          row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1);
+        CSV += row + "\r\n";
+      }
+      if (CSV === "") {
+        alert("Invalid data");
+        return;
+      }
+      var fileName = name.replace(/ /g, "_");
+      var universalBOM = "\uFEFF";
+      var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(universalBOM + CSV);
+      let link = document.createElement("a");
+      link.href = uri;
+      link.style = "visibility:hidden";
+      link.download = fileName + ".csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+  return o.export();
+}
+export function SplitNumber(price, count, splitter) {
+  if (!price) {
+    return '';
+  }
+  count = count || 3;
+  splitter = splitter || ',';
+  let str = price.toString();
+  let dotIndex = str.indexOf('.');
+  if (dotIndex !== -1) {
+    str = str.slice(0, dotIndex);
+  }
+  let res = '';
+  let index = 0;
+  for (let i = str.length - 1; i >= 0; i--) {
+    res = str[i] + res;
+    if (index === count - 1) {
+      index = 0;
+      if (i > 0) {
+        res = splitter + res;
+      }
+    } else {
+      index++;
+    }
+  }
+  return res;
+}
+export function EventHandler(selector, event, action, type) {
+  type = type || 'bind';
+  var me = {
+    mousedown: "touchstart",
+    mousemove: "touchmove",
+    mouseup: "touchend",
+    click: 'click'
+  };
+  let touch = ('ontouchstart' in document.documentElement);
+  let fixedEvent = touch ? me[event] : event;
+  var element = typeof selector === "string" ? selector === "window" ? $(window) : $(selector) : selector;
+  element.unbind(fixedEvent, action);
+  if (type === 'bind') {
+    element.bind(fixedEvent, action);
+  }
+}
+export function getValueByStep(p) {
+  let {
+    value,
+    start,
+    step,
+    end
+  } = p;
+  let res = Math.round((value - start) / step) * step + start;
+  if (res < start) {
+    res = start;
+  }
+  if (res > end) {
+    res = end;
+  }
+  return res;
+}
+export function URLToJSON(url) {
+  try {
+    return JSON.parse(`{"${decodeURI(url.split('?')[1]).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"')}"}`);
+  } catch {
+    return {};
+  }
+}
+export function FileSize(number) {
+  if (number < 1024) {
+    return `${number} bytes`;
+  } else if (number >= 1024 && number < 1048576) {
+    return `${(number / 1024).toFixed(1)} KB`;
+  } else if (number >= 1048576) {
+    return `${(number / 1048576).toFixed(1)} MB`;
+  }
+}
+function IsFileTypeValid(file) {
+  const fileTypes = ["image/apng", "image/bmp", "image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/tiff", "image/webp", "image/x-icon"];
+  return fileTypes.includes(file.type);
+}
+export function FilePreview(file, attrs) {
+  if (!IsFileTypeValid(file)) {
+    return null;
+  }
+  let url = GetFileUrl(file);
+  return /*#__PURE__*/_jsx("img", {
+    src: url,
+    alt: file.name,
+    title: file.name,
+    objectFit: "cover",
+    ...attrs
+  });
+}
+export function JSXToHTML(jsx) {
+  return ReactDOMServer.renderToStaticMarkup(jsx);
+}
+export async function Copy(text) {
+  window.navigator.clipboard.writeText(text);
+}
+export function IsTouch() {
+  return "ontouchstart" in document.documentElement;
+}
+export async function Paste() {
+  try {
+    return window.navigator.clipboard.read();
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+export function Search(items, searchValue, getValue = o => o) {
+  if (!searchValue) {
+    return items;
+  }
+  function isMatch(keys, value) {
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      if (value.indexOf(key) === -1) {
+        return false;
+      }
+    }
+    return true;
+  }
+  let keys = searchValue.split(' ');
+  return items.filter((o, i) => isMatch(keys, getValue(o, i)));
+}
+export function GenerateComponsition(p) {
+  let {
+    level: maxLevel = 4,
+    length = 4,
+    childsField = 'childs',
+    fields = {}
+  } = p;
+  let $$ = {
+    generate(level = 0, index = '') {
+      if (level >= maxLevel) {
+        return [];
+      }
+      let res = [];
+      for (let i = 0; i < length; i++) {
+        let newIndex = index + '-' + i;
+        let newItem = {
+          id: 'aa' + Math.round(Math.random() * 10000),
+          [childsField]: $$.generate(level + 1, newIndex)
+        };
+        for (let prop in fields) {
+          newItem[prop] = fields[prop] + index;
+        }
+        res.push(newItem);
+      }
+      return res;
+    }
+  };
+  return $$.generate();
+}
+export function CalculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance;
+}
+export function getEventAttrs(eventType, callback) {
+  let touch = IsTouch();
+  let fixedEvent;
+  if (touch) {
+    fixedEvent = {
+      'onMouseDown': 'onTouchStart',
+      'onMouseMove': 'onTouchMove',
+      'onMouseUp': 'onTouchEnd'
+    }[eventType];
+  } else {
+    fixedEvent = eventType;
+  }
+  return {
+    [fixedEvent]: callback
+  };
+}
+function toRadians(degree) {
+  return degree * (Math.PI / 180);
+}
+export function AddToAttrs(attrs, p) {
+  attrs = attrs || {};
+  let {
+    style
+  } = p;
+  let attrClassName = attrs.className ? attrs.className.split(' ') : [];
+  let className = p.className ? Array.isArray(p.className) ? p.className : p.className.split(' ') : [];
+  let classNames = [...attrClassName, ...className.filter(o => !!o)];
+  let newClassName = classNames.length ? classNames.join(' ') : undefined;
+  let newStyle = {
+    ...attrs.style,
+    ...style
+  };
+  return {
+    ...attrs,
+    className: newClassName,
+    style: newStyle,
+    ...p.attrs
+  };
+}
+// export function JsonValidator(json:any, schema:any) {
+//     let $$ = {
+//         getType(v) {
+//             if (['string', 'number', 'boolean', 'array', 'object', 'null', 'undefined'].indexOf(v) !== -1) { return v }
+//             if (Array.isArray(v)) { return 'array' }
+//             return typeof v
+//         },
+//         getSchemaTypes(s) {
+//             if (typeof s === 'string' && s.indexOf('|') !== -1) { return s.split('|') }
+//             return [s]
+//         },
+//         compaire(data, schema, propName) {
+//             const schemaTypes = this.getSchemaTypes(schema);
+//             let type = this.getType(data);
+//             let isMatch = false;
+//             for (let i = 0; i < schemaTypes.length; i++) {
+//                 let st = schemaTypes[i];
+//                 if (['string', 'number', 'boolean', 'array', 'object', 'null', 'undefined'].indexOf(st) !== -1) {
+//                     if (type === st) { isMatch = true }
+//                 }
+//                 else if (typeof st === 'object') {
+//                     if (type === this.getType(st)) { isMatch = true }
+//                 }
+//                 else {
+//                     if (data === st) { isMatch = true }
+//                 }
+//             }
+//             if (!isMatch) { return `${propName} must be ${schemaTypes.join(' or ')}` }
+//         },
+//         validate(data, schema, propName = 'data') {
+//             let compaireResult = this.compaire(data, schema, propName)
+//             if (compaireResult) { return compaireResult }
+//             if (typeof schema === 'object') {
+//                 if (Array.isArray(data)) {
+//                     for (let i = 0; i < data.length; i++) {
+//                         let d = data[i];
+//                         let s = schema[i] || schema[0];
+//                         let res = this.validate(d, s, `${propName}[${i}]`);
+//                         if (res) { return res }
+//                     }
+//                 }
+//                 else {
+//                     for (let prop in data) {
+//                         let d = data[prop];
+//                         let s = schema[prop];
+//                         let res = this.validate(d, s, `${propName}.${prop}`);
+//                         if (res) { return res }
+//                     }
+//                     for (let prop in schema) {
+//                         let d = data[prop];
+//                         let s = schema[prop];
+//                         let res = this.validate(d, s, `${propName}.${prop}`);
+//                         if (res) { return res }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     return $$.validate(json, schema)
+// }
+export class Swip {
+  constructor(p) {
+    _defineProperty(this, "p", void 0);
+    _defineProperty(this, "geo", void 0);
+    _defineProperty(this, "timeout", void 0);
+    _defineProperty(this, "count", void 0);
+    _defineProperty(this, "domLimit", void 0);
+    _defineProperty(this, "parentLimit", void 0);
+    _defineProperty(this, "getDom", void 0);
+    _defineProperty(this, "getParent", void 0);
+    _defineProperty(this, "init", void 0);
+    _defineProperty(this, "dx", void 0);
+    _defineProperty(this, "dy", void 0);
+    _defineProperty(this, "cx", void 0);
+    _defineProperty(this, "cy", void 0);
+    _defineProperty(this, "dist", void 0);
+    _defineProperty(this, "so", void 0);
+    _defineProperty(this, "getPercentByValue", void 0);
+    _defineProperty(this, "getMousePosition", void 0);
+    _defineProperty(this, "click", void 0);
+    _defineProperty(this, "mouseDown", void 0);
+    _defineProperty(this, "mouseMove", void 0);
+    _defineProperty(this, "mouseUp", void 0);
+    _defineProperty(this, "getDOMLimit", void 0);
+    _defineProperty(this, "change", void 0);
+    _defineProperty(this, "getPage", void 0);
+    _defineProperty(this, "isMoving", void 0);
+    _defineProperty(this, "centerAngle", void 0);
+    _defineProperty(this, "defaultLimit", void 0);
+    _defineProperty(this, "addSelectRect", void 0);
+    _defineProperty(this, "setSelectRect", void 0);
+    _defineProperty(this, "removeSelectRect", void 0);
+    _defineProperty(this, "selectRect", void 0);
+    _defineProperty(this, "getIsInSelectRect", void 0);
+    _defineProperty(this, "defaultChange", void 0);
+    let {
+      selectRect
+    } = p;
+    if (selectRect) {
+      let {
+        color = '#96a9bc'
+      } = selectRect;
+      this.selectRect = {
+        ...selectRect,
+        color
+      };
+    }
+    this.defaultChange = {
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      dist: 0,
+      angle: 0,
+      deltaCenterAngle: 0
+    };
+    this.defaultLimit = {
+      width: 0,
+      height: 0,
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      centerX: 0,
+      centerY: 0
+    };
+    this.domLimit = this.defaultLimit;
+    this.parentLimit = this.defaultLimit;
+    this.change = {
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      dist: 0,
+      angle: 0,
+      deltaCenterAngle: 0
+    };
+    this.addSelectRect = () => {};
+    this.setSelectRect = () => {};
+    this.removeSelectRect = () => {};
+    this.so = {};
+    this.p = p;
+    this.geo = new Geo();
+    this.timeout = undefined;
+    this.count = 0;
+    this.getDom = () => p.dom();
+    this.getParent = () => p.parent ? p.parent() : undefined;
+    this.dx = 0;
+    this.dy = 0;
+    this.cx = 0;
+    this.cy = 0;
+    this.dist = 0;
+    this.isMoving = false;
+    this.centerAngle = 0;
+    this.init = () => {
+      this.count++;
+      if (this.count > 10) {
+        clearTimeout(this.timeout);
+        return;
+      }
+      let res = this.getDom();
+      if (!res.length) {
+        this.timeout = setTimeout(() => this.init(), 400);
+      } else {
+        clearTimeout(this.timeout);
+        EventHandler(this.getDom(), 'mousedown', $.proxy(this.mouseDown, this));
+        if (p.onClick) {
+          EventHandler(this.getDom(), 'click', $.proxy(this.click, this));
+        }
+      }
+    };
+    this.getPercentByValue = (value, start, end) => {
+      return 100 * (value - start) / (end - start);
+    };
+    this.getPage = () => {
+      let {
+        page
+      } = this.p;
+      return page ? page() : $(window);
+    };
+    this.getMousePosition = e => {
+      this.domLimit = this.getDOMLimit('dom');
+      let page = this.getPage();
+      let st = page.scrollTop();
+      let sl = page.scrollLeft();
+      let client = GetClient(e),
+        x = client.x - this.domLimit.left + sl,
+        y = client.y - this.domLimit.top + st;
+      let xp = this.getPercentByValue(x, 0, this.domLimit.width),
+        yp = this.getPercentByValue(y, 0, this.domLimit.height);
+      let centerAngle = this.geo.getAngle([[this.domLimit.centerX, this.domLimit.centerY], [client.x, client.y]]);
+      let res = {
+        xp,
+        yp,
+        clientX: client.x,
+        clientY: client.y,
+        x,
+        y,
+        centerAngle
+      };
+      return res;
+    };
+    this.getDOMLimit = type => {
+      let dom = type === 'dom' ? this.getDom() : this.getParent();
+      let offset = dom.offset();
+      let DOM = {
+        width: dom.width(),
+        height: dom.height(),
+        left: offset.left,
+        top: offset.top,
+        centerX: 0,
+        centerY: 0
+      };
+      return {
+        ...DOM,
+        centerX: DOM.left + DOM.width / 2,
+        centerY: DOM.top + DOM.height / 2,
+        right: DOM.left + DOM.width,
+        bottom: DOM.top + DOM.height
+      };
+    };
+    this.click = e => {
+      //jeloye click bad az drag ro bayad begirim choon click call mishe 
+      if (this.isMoving) {
+        return;
+      }
+      this.domLimit = this.getDOMLimit('dom');
+      this.parentLimit = p.parent ? this.getDOMLimit('parent') : this.defaultLimit;
+      let mousePosition = this.getMousePosition(e);
+      let clickParams = {
+        mousePosition,
+        domLimit: this.domLimit,
+        parentLimit: this.parentLimit,
+        event: e,
+        change: this.defaultChange
+      };
+      if (p.onClick) {
+        p.onClick(clickParams);
+      }
+    };
+    this.addSelectRect = (left, top) => {
+      if (!this.selectRect || !this.selectRect.enable()) {
+        return;
+      }
+      let {
+        color
+      } = this.selectRect;
+      let dom = this.getDom();
+      this.so.tsr = {
+        left,
+        top
+      };
+      this.removeSelectRect();
+      dom.append(`<div class="swip-select-rect" style="border:1px dashed ${color};background:${color + '30'};left:${left}px;top:${top}px;position:absolute;width:0;height:0"></div>`);
+    };
+    this.setSelectRect = (width, height) => {
+      if (!this.selectRect || !this.selectRect.enable()) {
+        return;
+      }
+      let dom = this.getDom();
+      let SR = dom.find('.swip-select-rect');
+      let {
+        tsr = {
+          left: 0,
+          top: 0
+        }
+      } = this.so || {};
+      let left = tsr.left;
+      let top = tsr.top;
+      if (width < 0) {
+        left = left + width;
+        width = Math.abs(width);
+      }
+      if (height < 0) {
+        top = top + height;
+        height = Math.abs(height);
+      }
+      let newSelectRect = {
+        left,
+        top,
+        width,
+        height
+      };
+      this.so.sr = newSelectRect;
+      SR.css(newSelectRect);
+    };
+    this.removeSelectRect = () => {
+      if (!this.selectRect || !this.selectRect.enable()) {
+        return;
+      }
+      let dom = this.getDom();
+      let selectRect = dom.find('.swip-select-rect');
+      selectRect.remove();
+    };
+    this.mouseDown = e => {
+      e.stopPropagation();
+      this.isMoving = false;
+      this.domLimit = this.getDOMLimit('dom');
+      this.parentLimit = p.parent ? this.getDOMLimit('parent') : this.defaultLimit;
+      let mousePosition = this.getMousePosition(e);
+      this.centerAngle = mousePosition.centerAngle;
+      this.cx = mousePosition.clientX;
+      this.cy = mousePosition.clientY;
+      this.so = {
+        client: {
+          x: mousePosition.clientX,
+          y: mousePosition.clientY
+        }
+      };
+      this.addSelectRect(mousePosition.x, mousePosition.y);
+      let startParams = {
+        mousePosition,
+        domLimit: this.domLimit,
+        parentLimit: this.parentLimit,
+        event: e,
+        change: this.defaultChange
+      };
+      let res = (p.start || (() => [0, 0]))(startParams);
+      if (!Array.isArray(res)) {
+        return;
+      }
+      let x = res[0],
+        y = res[1];
+      this.so = {
+        ...this.so,
+        x,
+        y
+      };
+      EventHandler('window', 'mousemove', $.proxy(this.mouseMove, this));
+      EventHandler('window', 'mouseup', $.proxy(this.mouseUp, this));
+    };
+    this.mouseMove = e => {
+      e.stopPropagation();
+      let {
+        speedX = 1,
+        speedY = 1,
+        stepX = 1,
+        stepY = 1,
+        reverseX,
+        reverseY,
+        insideX,
+        insideY
+      } = this.p;
+      let mousePosition = this.getMousePosition(e),
+        client = GetClient(e);
+      let dx = client.x - this.cx,
+        dy = client.y - this.cy;
+      dx = Math.round(dx * speedX) * (reverseX ? -1 : 1);
+      dy = Math.round(dy * speedY) * (reverseY ? -1 : 1);
+      let deltaCenterAngle = mousePosition.centerAngle - this.centerAngle;
+      //if(deltaCenterAngle < 0){deltaCenterAngle += 360}
+      if (typeof stepX === 'number') {
+        dx = Math.round(dx / stepX) * stepX;
+      }
+      if (typeof stepY === 'number') {
+        dy = Math.round(dy / stepY) * stepY;
+      }
+      if (dx === this.dx && dy === this.dy) {
+        return;
+      }
+      this.isMoving = true;
+      this.dx = dx;
+      this.dy = dy;
+      this.dist = Math.round(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+      let angle = this.geo.getAngle([[this.cx, this.cy], [client.x, client.y]]);
+      this.setSelectRect(dx, dy);
+      let x = 0,
+        y = 0;
+      if (this.so.x !== undefined && this.so.y !== undefined) {
+        x = this.so.x + dx;
+        y = this.so.y + dy;
+        let {
+          minX,
+          minY,
+          maxX,
+          maxY
+        } = this.p;
+        if (minX !== undefined && x < minX) {
+          x = minX;
+        }
+        if (maxX !== undefined && x > maxX) {
+          x = maxX;
+        }
+        if (minY !== undefined && y < minY) {
+          y = minY;
+        }
+        if (maxY !== undefined && y > maxY) {
+          y = maxY;
+        }
+      }
+      if (stepX === true) {
+        x = Math.round(x / this.domLimit.width) * this.domLimit.width;
+      }
+      if (stepY === true) {
+        y = Math.round(y / this.domLimit.height) * this.domLimit.height;
+      }
+      if (insideX) {
+        if (this.parentLimit) {
+          if (x > this.parentLimit.width - this.domLimit.width) {
+            x = this.parentLimit.width - this.domLimit.width;
+          }
+          if (x < 0) {
+            x = 0;
+          }
+        } else {
+          alert('Swip error => you set insideX prop but missing parent props');
+        }
+      }
+      if (insideY) {
+        if (this.parentLimit) {
+          if (y > this.parentLimit.height - this.domLimit.height) {
+            y = this.parentLimit.height - this.domLimit.height;
+          }
+          if (y < 0) {
+            y = 0;
+          }
+        } else {
+          alert('Swip error => you set insideY prop but missing parent props');
+        }
+      }
+      this.change = {
+        x,
+        y,
+        dx,
+        dy,
+        dist: this.dist,
+        angle,
+        deltaCenterAngle
+      };
+      let p = {
+        change: this.change,
+        mousePosition,
+        domLimit: this.domLimit,
+        parentLimit: this.parentLimit,
+        event: e,
+        selectRect: this.so.sr,
+        isInSelectRect: this.getIsInSelectRect(this.so.sr || {
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0
+        })
+      };
+      if (this.p.move) {
+        this.p.move(p);
+      }
+    };
+    this.getIsInSelectRect = selectRect => {
+      let {
+        left,
+        top,
+        width,
+        height
+      } = selectRect;
+      return (x, y) => {
+        if (x < left) {
+          return false;
+        }
+        if (y < top) {
+          return false;
+        }
+        if (x > left + width) {
+          return false;
+        }
+        if (y > top + height) {
+          return false;
+        }
+        return true;
+      };
+    };
+    this.mouseUp = e => {
+      e.stopPropagation();
+      EventHandler('window', 'mousemove', this.mouseMove, 'unbind');
+      EventHandler('window', 'mouseup', this.mouseUp, 'unbind');
+      //chon click bad az mouseUp call mishe mouseUp isMoving ro zoodtar false mikone (pas nemitoone jeloye click bad az harekat ro begire), pas bayad in amal ba yek vaghfe anjam beshe
+      //jeloye clicke bad az harekat ro migirim ta bad az drag kardan function click call nashe
+      setTimeout(() => this.isMoving = false, 10);
+      let mousePosition = this.getMousePosition(e);
+      this.removeSelectRect();
+      let p = {
+        change: this.change,
+        event: e,
+        domLimit: this.domLimit,
+        parentLimit: this.parentLimit,
+        mousePosition,
+        selectRect: this.so.sr,
+        isInSelectRect: this.getIsInSelectRect(this.so.sr || {
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0
+        })
+      };
+      if (this.p.end) {
+        this.p.end(p);
+      }
+    };
+    this.init();
+  }
+}
+export class AIODate {
+  constructor() {
+    _defineProperty(this, "isMatch", void 0);
+    _defineProperty(this, "convertToArray", void 0);
+    _defineProperty(this, "isAny", void 0);
+    _defineProperty(this, "isLess", void 0);
+    _defineProperty(this, "isGreater", void 0);
+    _defineProperty(this, "isEqual", void 0);
+    _defineProperty(this, "isBetween", void 0);
+    _defineProperty(this, "getWeekDay", void 0);
+    _defineProperty(this, "isJalali", void 0);
+    _defineProperty(this, "getWeekDays", void 0);
+    _defineProperty(this, "toGregorian", void 0);
+    _defineProperty(this, "toJalali", void 0);
+    _defineProperty(this, "pattern", void 0);
+    _defineProperty(this, "get2Digit", void 0);
+    _defineProperty(this, "getMonths", void 0);
+    _defineProperty(this, "getSplitter", void 0);
+    _defineProperty(this, "getTime", void 0);
+    _defineProperty(this, "getNextTime", void 0);
+    _defineProperty(this, "getMonthDaysLength", void 0);
+    _defineProperty(this, "getYearDaysLength", void 0);
+    _defineProperty(this, "getDaysOfWeek", void 0);
+    _defineProperty(this, "getDatesBetween", void 0);
+    _defineProperty(this, "getDelta", void 0);
+    _defineProperty(this, "convertMiliseconds", void 0);
+    _defineProperty(this, "getDaysOfMonth", void 0);
+    _defineProperty(this, "getLastDayOfMonth", void 0);
+    _defineProperty(this, "getDateByPattern", void 0);
+    _defineProperty(this, "getToday", void 0);
+    _defineProperty(this, "getDayIndex", void 0);
+    this.isMatch = (date, matchers) => {
+      date = this.convertToArray(date);
+      for (let i = 0; i < matchers.length; i++) {
+        let matcher = matchers[i],
+          type,
+          targets;
+        try {
+          let a = matcher.split(',');
+          type = a[0];
+          targets = a.slice(1, a.length);
+        } catch {
+          return false;
+        }
+        if (type === '<') {
+          for (let i = 0; i < targets.length; i++) {
+            if (this.isLess(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '>') {
+          for (let i = 0; i < targets.length; i++) {
+            if (this.isGreater(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '<=') {
+          for (let i = 0; i < targets.length; i++) {
+            if (this.isEqual(date, targets[i])) {
+              return true;
+            }
+            if (this.isLess(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '>=') {
+          for (let i = 0; i < targets.length; i++) {
+            if (this.isEqual(date, targets[i])) {
+              return true;
+            }
+            if (this.isGreater(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '=') {
+          for (let i = 0; i < targets.length; i++) {
+            if (this.isEqual(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '!=') {
+          for (let i = 0; i < targets.length; i++) {
+            if (!this.isEqual(date, targets[i])) {
+              return true;
+            }
+          }
+        } else if (type === '<>') {
+          if (targets[0] && targets[1]) {
+            let start, end;
+            if (this.isLess(targets[0], targets[1])) {
+              start = targets[0];
+              end = targets[1];
+            } else {
+              start = targets[1];
+              end = targets[0];
+            }
+            if (this.isGreater(date, start) && this.isLess(date, end)) {
+              return true;
+            }
+          }
+        } else if (type === '<=>') {
+          if (targets[0] && targets[1]) {
+            let start, end;
+            if (this.isLess(targets[0], targets[1])) {
+              start = targets[0];
+              end = targets[1];
+            } else {
+              start = targets[1];
+              end = targets[0];
+            }
+            if (this.isGreater(date, start) && this.isLess(date, end)) {
+              return true;
+            }
+            if (this.isEqual(date, start) || this.isEqual(date, end)) {
+              return true;
+            }
+          }
+        } else if (type === '!<>') {
+          if (targets[0] && targets[1]) {
+            let start, end;
+            if (this.isLess(targets[0], targets[1])) {
+              start = targets[0];
+              end = targets[1];
+            } else {
+              start = targets[1];
+              end = targets[0];
+            }
+            if (!this.isGreater(date, start) || !this.isLess(date, end)) {
+              return true;
+            }
+          }
+        } else if (type === '!<=>') {
+          if (targets[0] && targets[1]) {
+            let start, end;
+            if (this.isLess(targets[0], targets[1])) {
+              start = targets[0];
+              end = targets[1];
+            } else {
+              start = targets[1];
+              end = targets[0];
+            }
+            if (!this.isEqual(date, start) && !this.isEqual(date, end) && (this.isLess(date, start) || this.isGreater(date, end))) {
+              return true;
+            }
+          }
+        } else if (type === 'w') {
+          let w = this.getWeekDay(date).index;
+          for (let i = 0; i < targets.length; i++) {
+            if (w === +targets[i]) {
+              return true;
+            }
+          }
+        } else if (type === '!w') {
+          let w = this.getWeekDay(date).index;
+          for (let i = 0; i < targets.length; i++) {
+            if (w !== +targets[i]) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    };
+    this.convertToArray = (date, jalali) => {
+      if (!date) {
+        return [];
+      }
+      let list;
+      if (Array.isArray(date)) {
+        list = [...date];
+      } else if (typeof date === 'string') {
+        if (date.indexOf("T") !== -1) {
+          //"2015-03-25T12:00:00Z"
+          let [d1, t1] = date.split("T");
+          let t2 = t1.split(".")[0];
+          let t3 = t2.split(':');
+          let d2 = d1.split('-');
+          list = [...d2.map(o => +o), ...t3.map(o => +o), 0];
+        } else {
+          list = date.split(this.getSplitter(date)).map(o => +o);
+        }
+      } else if (typeof date === 'number') {
+        let d = new Date(date);
+        let year = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let day = d.getDate();
+        let hour = d.getHours();
+        let minute = d.getMinutes();
+        let second = d.getSeconds();
+        let miliseconds = d.getMilliseconds();
+        let tenthsecond = Math.round(miliseconds / 100);
+        list = [year, month, day, hour, minute, second, tenthsecond];
+      } else if (typeof date === 'object') {
+        if (typeof date.year === 'number') {
+          let dateObject = date;
+          return [dateObject.year, dateObject.month, dateObject.day, dateObject.hour];
+        } else {
+          let dateObject = date;
+          let year = dateObject.getFullYear();
+          let month = dateObject.getMonth() + 1;
+          let day = dateObject.getDate();
+          let hour = dateObject.getHours();
+          let minute = dateObject.getMinutes();
+          let second = dateObject.getSeconds();
+          let miliseconds = dateObject.getMilliseconds();
+          let tenthsecond = Math.round(miliseconds / 100);
+          list = [year, month, day, hour, minute, second, tenthsecond];
+        }
+      } else {
+        return [];
+      }
+      if (jalali) {
+        let [year, month, day] = this.toJalali([list[0], list[1], list[2]]);
+        list[0] = year;
+        list[1] = month;
+        list[2] = day;
+      }
+      return list;
+    };
+    this.isAny = (o1, o2, key) => {
+      if (!o1 || !o2) {
+        return false;
+      }
+      o1 = this.convertToArray(o1);
+      o2 = this.convertToArray(o2);
+      let compaireKey = 'equal';
+      for (let i = 0; i < o1.length; i++) {
+        if (isNaN(o2[i])) {
+          o2[i] = o1[i];
+        }
+        let a = o1[i];
+        let b = o2[i] || 0;
+        if (a < b) {
+          compaireKey = 'less';
+        }
+        if (a > b) {
+          compaireKey = 'greater';
+        }
+      }
+      return compaireKey === key;
+    };
+    this.isLess = (o1, o2) => this.isAny(o1, o2, 'less');
+    this.isEqual = (o1, o2) => this.isAny(o1, o2, 'equal');
+    this.isGreater = (o1, o2) => this.isAny(o1, o2, 'greater');
+    this.isBetween = (o1, [o2, o3]) => this.isAny(o1, o2, 'greater') && this.isAny(o1, o3, 'less');
+    this.getWeekDay = date => {
+      let dateArray = this.convertToArray(date);
+      let jalali = this.isJalali(dateArray);
+      dateArray = this.toGregorian(date);
+      let index = new Date(dateArray[0], dateArray[1] - 1, dateArray[2]).getDay();
+      if (jalali) {
+        index += 1;
+        index = index % 7;
+      }
+      return {
+        weekDay: this.getWeekDays(jalali)[index],
+        index
+      };
+    };
+    this.isJalali = date => {
+      return this.convertToArray(date)[0] < 1700 ? true : false;
+    };
+    this.getWeekDays = jalali => {
+      return [['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'], ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']][jalali ? 0 : 1];
+    };
+    this.toGregorian = date => {
+      if (!date) {
+        return [];
+      }
+      let arr = this.convertToArray(date);
+      let jalali = this.isJalali(arr);
+      if (!jalali) {
+        return arr;
+      }
+      let [jy, jm, jd] = arr;
+      var sal_a, gy, gm, gd, days;
+      jy += 1595;
+      days = -355668 + 365 * jy + ~~(jy / 33) * 8 + ~~((jy % 33 + 3) / 4) + jd + (jm < 7 ? (jm - 1) * 31 : (jm - 7) * 30 + 186);
+      gy = 400 * ~~(days / 146097);
+      days %= 146097;
+      if (days > 36524) {
+        gy += 100 * ~~(--days / 36524);
+        days %= 36524;
+        if (days >= 365) days++;
+      }
+      gy += 4 * ~~(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        gy += ~~((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      gd = days + 1;
+      sal_a = [0, 31, gy % 4 === 0 && gy % 100 !== 0 || gy % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+      arr[0] = gy;
+      arr[1] = gm;
+      arr[2] = gd;
+      return arr;
+    };
+    this.pattern = (date, pattern, jalali = this.isJalali(date)) => {
+      date = this.convertToArray(date, jalali);
+      let [year, month, day, hour, minute, second, tenthsecond] = date;
+      pattern = pattern.replace('{year}', year.toString());
+      if (typeof month === 'number') {
+        pattern = pattern.replace('{month}', this.get2Digit(month));
+      }
+      if (typeof day === 'number') {
+        pattern = pattern.replace('{day}', this.get2Digit(day));
+      }
+      if (typeof hour === 'number') {
+        pattern = pattern.replace('{hour}', this.get2Digit(hour));
+      }
+      if (typeof minute === 'number') {
+        pattern = pattern.replace('{minute}', this.get2Digit(minute));
+      }
+      if (typeof second === 'number') {
+        pattern = pattern.replace('{second}', this.get2Digit(second));
+      }
+      if (typeof tenthsecond === 'number') {
+        pattern = pattern.replace('{tenthsecond}', this.get2Digit(tenthsecond));
+      }
+      if (pattern.indexOf('{monthString}') !== -1) {
+        pattern = pattern.replace('{monthString}', this.getMonths(jalali)[month - 1]);
+      }
+      if (pattern.indexOf('{weekDay}') !== -1) {
+        let weekDays = this.getWeekDays(jalali);
+        let {
+          index
+        } = this.getWeekDay(date);
+        pattern = pattern.replace('{weekDay}', weekDays[index]);
+      }
+      return pattern;
+    };
+    this.get2Digit = n => {
+      let ns;
+      try {
+        ns = n.toString();
+      } catch {
+        return n.toString();
+      }
+      if (ns.length === 1) {
+        ns = '0' + n;
+      }
+      return ns;
+    };
+    this.getMonths = jalali => {
+      return [['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'], ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']][jalali ? 0 : 1];
+    };
+    this.toJalali = date => {
+      let arr = this.convertToArray(date);
+      let jalali = this.isJalali(arr);
+      if (jalali) {
+        return arr;
+      }
+      let [gy, gm, gd] = arr;
+      var g_d_m, jy, jm, jd, gy2, days;
+      g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      gy2 = gm > 2 ? gy + 1 : gy;
+      days = 355666 + 365 * gy + ~~((gy2 + 3) / 4) - ~~((gy2 + 99) / 100) + ~~((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+      jy = -1595 + 33 * ~~(days / 12053);
+      days %= 12053;
+      jy += 4 * ~~(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        jy += ~~((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      if (days < 186) {
+        jm = 1 + ~~(days / 31);
+        jd = 1 + days % 31;
+      } else {
+        jm = 7 + ~~((days - 186) / 30);
+        jd = 1 + (days - 186) % 30;
+      }
+      arr[0] = jy;
+      arr[1] = jm;
+      arr[2] = jd;
+      return arr;
+    };
+    this.getSplitter = value => {
+      let splitter = '/';
+      for (let i = 0; i < value.length; i++) {
+        if (isNaN(parseInt(value[i]))) {
+          return value[i];
+        }
+      }
+      return splitter;
+    };
+    this.getTime = (date, jalali = this.isJalali(date)) => {
+      if (!date) {
+        return 0;
+      }
+      if (typeof date === 'number') {
+        return date;
+      }
+      date = this.convertToArray(date);
+      let [year, month = 1, day = 1, hour = 0, minute = 0, second = 0, tenthsecond = 0] = date;
+      if (jalali) {
+        date = this.toGregorian([year, month, day, hour, minute, second, tenthsecond]);
+      }
+      let time = new Date(date[0], date[1] - 1, date[2]).getTime();
+      time += hour * 60 * 60 * 1000;
+      time += minute * 60 * 1000;
+      time += second * 1000;
+      time += tenthsecond * 100;
+      return time;
+    };
+    this.getNextTime = (date, offset, jalali = this.isJalali(date)) => {
+      if (!offset) {
+        return this.convertToArray(date);
+      }
+      let time = this.getTime(date, jalali);
+      time += offset;
+      let dateArray = this.convertToArray(time);
+      if (jalali) {
+        let [jy, jm, jd] = this.toJalali(dateArray);
+        dateArray[0] = jy;
+        dateArray[1] = jm;
+        dateArray[2] = jd;
+      }
+      return dateArray;
+    };
+    this.getMonthDaysLength = date => {
+      if (!date) {
+        return 0;
+      }
+      let [year, month] = this.convertToArray(date);
+      let jalali = this.isJalali([year, month]);
+      if (jalali) {
+        return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, [1, 5, 9, 13, 17, 22, 26, 30].indexOf(year % 33) === -1 ? 29 : 30][month - 1];
+      } else {
+        return new Date(year, month - 1, 0).getDate();
+      }
+    };
+    this.getYearDaysLength = date => {
+      if (!date) {
+        return 0;
+      }
+      let [year] = this.convertToArray(date);
+      let res = 0;
+      for (let i = 1; i <= 12; i++) {
+        res += this.getMonthDaysLength([year, i]);
+      }
+      return res;
+    };
+    this.getDaysOfWeek = (date, pattern) => {
+      if (!date) {
+        return [];
+      }
+      let dateArray = this.convertToArray(date);
+      let {
+        index
+      } = this.getWeekDay(dateArray);
+      let startDate = this.getNextTime([dateArray[0], dateArray[1], dateArray[2]], -(index + 1) * 24 * 60 * 60 * 1000);
+      let endDate = this.getNextTime([dateArray[0], dateArray[1], dateArray[2]], (7 - index) * 24 * 60 * 60 * 1000);
+      return this.getDatesBetween(startDate, endDate, 24 * 60 * 60 * 1000);
+    };
+    this.getDatesBetween = (date, otherDate, step = 24 * 60 * 60 * 1000) => {
+      if (!date || !otherDate) {
+        return [];
+      }
+      date = this.convertToArray(date);
+      otherDate = this.convertToArray(otherDate);
+      if (!this.isGreater(otherDate, date)) {
+        return [];
+      }
+      let delta = this.getDelta(date, otherDate);
+      let length = delta.miliseconds / step;
+      if (isNaN(length) || length > 1000) {
+        console.error('AIODate().getDatesBetween() => too many dates');
+        return [];
+      }
+      let nextDate = this.getNextTime(date, step);
+      let res = [];
+      while (this.isLess(nextDate, otherDate)) {
+        res.push(nextDate);
+        nextDate = this.getNextTime(nextDate, step);
+      }
+      return res;
+    };
+    this.getDelta = (date, otherDate, unit) => {
+      let dif = this.getTime(date) - this.getTime(otherDate || this.getToday());
+      return this.convertMiliseconds(-dif, unit);
+    };
+    this.convertMiliseconds = (miliseconds = 0, unit = 'day') => {
+      let type;
+      if (miliseconds < 0) {
+        type = 'passed';
+        miliseconds = -miliseconds;
+      } else if (miliseconds > 0) {
+        type = 'remaining';
+      } else {
+        type = 'now';
+      }
+      let index = ['day', 'hour', 'minute', 'second', 'tenthsecond', 'milisecond'].indexOf(unit);
+      let day = 0,
+        hour = 0,
+        minute = 0,
+        second = 0,
+        tenthsecond = 0;
+      let dif = miliseconds;
+      if (index <= 0) {
+        day = Math.floor(dif / (24 * 60 * 60 * 1000));
+        dif -= day * (24 * 60 * 60 * 1000);
+      }
+      if (index <= 1) {
+        hour = Math.floor(dif / (60 * 60 * 1000));
+        dif -= hour * (60 * 60 * 1000);
+      }
+      if (index <= 2) {
+        minute = Math.floor(dif / (60 * 1000));
+        dif -= minute * (60 * 1000);
+      }
+      if (index <= 3) {
+        second = Math.floor(dif / 1000);
+        dif -= second * 1000;
+      }
+      if (index <= 4) {
+        tenthsecond = Math.floor(dif / 100);
+      }
+      return {
+        day,
+        hour,
+        minute,
+        second,
+        tenthsecond,
+        miliseconds,
+        type
+      };
+    };
+    this.getDaysOfMonth = (date, pattern) => {
+      let dateArray = this.convertToArray(date);
+      let firstDay = [dateArray[0], dateArray[1], 1];
+      let lastDay = this.getLastDayOfMonth(dateArray);
+      let betweenDayes = this.getDatesBetween(firstDay, lastDay, 24 * 60 * 60 * 1000);
+      let result = [firstDay];
+      result = result.concat(betweenDayes);
+      result.push(lastDay);
+      if (pattern) {
+        return result.map(o => this.getDateByPattern(o, pattern));
+      }
+      return result;
+    };
+    this.getLastDayOfMonth = date => {
+      let dateArray = this.convertToArray(date);
+      let length = this.getMonthDaysLength(dateArray);
+      let lastDay = [dateArray[0], dateArray[1], length];
+      return lastDay;
+    };
+    this.getDateByPattern = (date, pattern) => this.pattern(date, pattern);
+    this.getToday = jalali => {
+      let date = new Date();
+      let dateArray = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), Math.round(date.getMilliseconds() / 100)];
+      if (jalali) {
+        dateArray = this.toJalali(dateArray);
+      }
+      return dateArray;
+    };
+    this.getDayIndex = (date, unit) => {
+      date = this.convertToArray(date);
+      if (unit === 'week') {
+        let days = this.getDaysOfWeek(date);
+        for (let i = 0; i < days.length; i++) {
+          let [year, month, day] = days[i];
+          if (year !== date[0]) {
+            continue;
+          }
+          if (month !== date[1]) {
+            continue;
+          }
+          if (day !== date[2]) {
+            continue;
+          }
+          return i;
+        }
+      }
+      if (unit === 'month') {
+        return date[2] - 1;
+      }
+      if (unit === 'year') {
+        let res = 0;
+        for (let i = 0; i < date[1] - 1; i++) {
+          res += this.getMonthDaysLength(date);
+        }
+        res += date[1];
+        return res - 1;
+      }
+      return 0;
+    };
+  }
+}
+export class Geo {
+  constructor() {
+    _defineProperty(this, "getAngle", void 0);
+    _defineProperty(this, "getDipAngle", void 0);
+    _defineProperty(this, "getLength", void 0);
+    _defineProperty(this, "getPrepDip", void 0);
+    _defineProperty(this, "getDip", void 0);
+    _defineProperty(this, "getPrepFromLine", void 0);
+    _defineProperty(this, "getLineBySLA", void 0);
+    _defineProperty(this, "getArcByPoints", void 0);
+    _defineProperty(this, "getAvg", void 0);
+    _defineProperty(this, "getArcBy3Points", void 0);
+    _defineProperty(this, "getYOnLineByX", void 0);
+    _defineProperty(this, "getXOnLineByY", void 0);
+    _defineProperty(this, "getMeet", void 0);
+    _defineProperty(this, "getInnerMeet", void 0);
+    _defineProperty(this, "getDLineByLine", void 0);
+    _defineProperty(this, "getPointsByNGon", void 0);
+    _defineProperty(this, "getLineByDLine", void 0);
+    _defineProperty(this, "tri", void 0);
+    _defineProperty(this, "getPrepToLine", void 0);
+    _defineProperty(this, "getLineType", void 0);
+    _defineProperty(this, "getLine", void 0);
+    _defineProperty(this, "getDLine", void 0);
+    _defineProperty(this, "setLineByLength", void 0);
+    _defineProperty(this, "getParallelLine", void 0);
+    _defineProperty(this, "getPointsByDivide", void 0);
+    _defineProperty(this, "fix", void 0);
+    _defineProperty(this, "setLineByAngle", void 0);
+    _defineProperty(this, "getNumberByStep", void 0);
+    _defineProperty(this, "setLineByOrtho", void 0);
+    _defineProperty(this, "rotateSpline", void 0);
+    _defineProperty(this, "isPointInPath", void 0);
+    _defineProperty(this, "getDXF", void 0);
+    this.getAngle = l => {
+      let line = this.getLineType(l) === 'DLine' ? this.getLineByDLine(l) : l;
+      let [p1, p2] = line;
+      let deltaX = p2[0] - p1[0];
+      let deltaY = p2[1] - p1[1];
+      let length = this.getLength([[0, 0], [deltaX, deltaY]]);
+      let angle = Math.acos(deltaX / length) / Math.PI * 180;
+      angle = Math.sign(deltaY) < 0 ? 360 - angle : angle;
+      return parseFloat(angle.toFixed(4));
+    };
+    this.getLineType = line => Array.isArray(line[0]) ? 'Line' : 'DLine';
+    this.getLine = l => this.getLineType(l) === 'Line' ? l : this.getLineByDLine(l);
+    this.getDLine = l => this.getLineType(l) === 'DLine' ? l : this.getDLineByLine(l);
+    this.getDipAngle = dip => this.getAngle([0, 0, dip]);
+    this.getLength = line => Math.sqrt(Math.pow(line[0][0] - line[1][0], 2) + Math.pow(line[0][1] - line[1][1], 2));
+    this.getPrepDip = dip => -1 / dip;
+    this.getDip = l => {
+      let line = this.getLine(l);
+      return line[0][1] - line[1][1] / line[0][0] - line[1][0];
+    };
+    this.getLineByDLine = dline => {
+      let [x, y] = dline;
+      let X = this.getXOnLineByY(dline, y + 10);
+      let Y = this.getYOnLineByX(dline, X);
+      return [[x, y], [X, Y]];
+    };
+    this.getPrepFromLine = (l, point, offset) => {
+      if (!offset) {
+        return point;
+      }
+      let dline = this.getDLine(l);
+      let angle = this.getAngle(dline);
+      return this.getLineBySLA(point, offset, angle - 90)[1];
+    };
+    this.getPrepToLine = (l, point) => {
+      let dline = this.getDLine(l);
+      let prepLine = [point[0], point[1], this.getPrepDip(dline[2])];
+      return this.getMeet(dline, prepLine);
+    };
+    this.getLineBySLA = (p1, length, angle) => {
+      if (!length) {
+        return [p1, p1];
+      }
+      return [p1, [p1[0] + this.tri('cos', angle) * length, p1[1] + this.tri('sin', angle) * length]];
+    };
+    this.getArcByPoints = (arcPoints, height) => {
+      var points = [];
+      var stringPoints = [];
+      for (var i = 0; i < arcPoints.length; i++) {
+        if (i === 3) {
+          break;
+        }
+        var point = arcPoints[i];
+        var stringPoint = point.toString();
+        if (stringPoints.indexOf(stringPoint) !== -1) {
+          continue;
+        }
+        stringPoints.push(stringPoint);
+        points.push(point);
+      }
+      var p1 = points[0],
+        p2 = points[1],
+        p3 = points[2];
+      var changeObject = {
+        x: 0,
+        y: 0,
+        r: 0
+      };
+      if (points.length === 1) {
+        changeObject = {
+          r: 0,
+          x: p1[0],
+          y: p1[1]
+        };
+      } else if (points.length === 2) {
+        let avg = this.getAvg([p1, p2]);
+        let dline = this.getDLineByLine([p1, p2]);
+        let pm = this.getPrepFromLine(dline, avg, height || 0);
+        if (height) {
+          changeObject = this.getArcBy3Points(p1, pm, p2);
+        } else {
+          changeObject = {
+            r: this.getLength([p1, p2]) / 2,
+            x: avg[0],
+            y: avg[1]
+          };
+        }
+      } else {
+        changeObject = this.getArcBy3Points(p1, p2, p3);
+      }
+      return changeObject;
+    };
+    this.getAvg = arr => {
+      var x = 0,
+        y = 0,
+        length = arr.length;
+      for (var i = 0; i < length; i++) {
+        x += arr[i][0];
+        y += arr[i][1];
+      }
+      return [x / length, y / length];
+    };
+    this.getArcBy3Points = (p1, p2, p3) => {
+      let dip1 = this.getPrepDip(this.getDip([p1, p2]));
+      let dip2 = this.getPrepDip(this.getDip([p2, p3]));
+      let point1 = this.getAvg([p1, p2]);
+      let point2 = this.getAvg([p2, p3]);
+      let dline1 = [point1[0], point1[1], dip1];
+      let dline2 = [point2[0], point2[1], dip2];
+      let meet = this.getMeet(dline1, dline2);
+      if (!meet) {
+        return {
+          x: 0,
+          y: 0,
+          r: 0
+        };
+      }
+      let x = meet[0],
+        y = meet[1];
+      let a1 = this.getAngle([meet, p1]),
+        a2 = this.getAngle([meet, p2]),
+        a3 = this.getAngle([meet, p3]);
+      let slice;
+      if (a1 < a2 && a2 < a3) {
+        slice = [a1, a3];
+      } else if (a2 < a3 && a3 < a1) {
+        slice = [a1, a3];
+      } else if (a3 < a1 && a1 < a2) {
+        slice = [a1, a3];
+      } else if (a3 < a2 && a2 < a1) {
+        slice = [a3, a1];
+      } else if (a1 < a3 && a3 < a2) {
+        slice = [a3, a1];
+      } else if (a2 < a1 && a1 < a3) {
+        slice = [a3, a1];
+      } else {
+        slice = [0, 0];
+      }
+      let arc = {
+        x,
+        y,
+        r: this.getLength([p1, [x, y]]),
+        slice
+      };
+      return arc;
+    };
+    this.getDLineByLine = line => {
+      let [p1] = line;
+      return [p1[0], p1[1], this.getDip(line)];
+    };
+    this.getMeet = (l1, l2) => {
+      //get {line1,line2} or {point1,point2,dip1,dip2}
+      let dline1 = this.getDLine(l1);
+      let dline2 = this.getDLine(l2);
+      let [p1x, p1y, dip1] = dline1;
+      let [p2x, p2y, dip2] = dline2;
+      if (dip1 === dip2) {
+        return false;
+      }
+      if (Math.abs(dip1) === Infinity) {
+        return [p1x, this.getYOnLineByX(dline2, p1x)];
+      }
+      if (Math.abs(dip2) === Infinity) {
+        return [p2x, this.getYOnLineByX(dline1, p2x)];
+      }
+      var x = (dip1 * p1x - dip2 * p2x + p2y - p1y) / (dip1 - dip2);
+      var y = dip1 * (x - p1x) + p1y;
+      return [x, y];
+    };
+    this.getInnerMeet = (line1, line2) => {
+      let meet = this.getMeet(line1, line2);
+      if (meet === false) {
+        return false;
+      }
+      if (line2[0][0] < line2[1][0]) {
+        if (meet[0] < line2[0][0] || meet[0] > line2[1][0]) {
+          return false;
+        }
+      } else {
+        if (meet[0] < line2[1][0] || meet[0] > line2[0][0]) {
+          return false;
+        }
+      }
+      if (line2[0][1] < line2[1][1]) {
+        if (meet[1] < line2[0][1] || meet[1] > line2[1][1]) {
+          return false;
+        }
+      } else {
+        if (meet[1] < line2[1][1] || meet[1] > line2[0][1]) {
+          return false;
+        }
+      }
+      if (line1[0][0] < line1[1][0]) {
+        if (meet[0] < line1[0][0] || meet[0] > line1[1][0]) {
+          return false;
+        }
+      } else {
+        if (meet[0] < line1[1][0] || meet[0] > line1[0][0]) {
+          return false;
+        }
+      }
+      if (line1[0][1] < line1[1][1]) {
+        if (meet[1] < line1[0][1] || meet[1] > line1[1][1]) {
+          return false;
+        }
+      } else {
+        if (meet[1] < line1[1][1] || meet[1] > line1[0][1]) {
+          return false;
+        }
+      }
+      return meet;
+    };
+    this.getYOnLineByX = (l, X) => {
+      // get {x,line} or {x,point,dip}
+      let [x, y, dip] = this.getDLine(l);
+      if (dip === Infinity) {
+        return 0;
+      }
+      return dip * (X - x) + y;
+    };
+    this.getXOnLineByY = (l, Y) => {
+      // get {y,line} or {y,point,dip}
+      let [x, y, dip] = this.getDLine(l);
+      if (dip === 0) {
+        return 0;
+      }
+      if (dip === Infinity) {
+        return x;
+      }
+      return (Y - y) / dip + x;
+    };
+    this.tri = (type, a) => Math[type](a * Math.PI / 180);
+    this.getPointsByNGon = (radius, count, corner) => {
+      let ang = 180 - 360 / count;
+      let w = +(this.tri('cos', ang / 2) * radius).toFixed(6) * 2;
+      let h = +(this.tri('sin', ang / 2) * radius).toFixed(6);
+      let p1 = [0, -h, corner];
+      let p2 = [0 + w / 2, -h, corner];
+      let points = [p1, p2];
+      let a = 360 / count;
+      for (let i = 0; i < count - 1; i++) {
+        let p = [points[i + 1][0] + this.tri('cos', a) * w, points[i + 1][1] + this.tri('sin', a) * w, corner];
+        a += 360 / count;
+        points.push(p);
+      }
+      points.push(p1);
+      return points;
+    };
+    this.setLineByLength = (line, length, side = 'end') => {
+      let p1 = [0, 0],
+        p2 = [0, 0],
+        angle = this.getAngle(line);
+      if (side === 'center') {
+        let center = this.getAvg(line);
+        let line1 = this.getLineBySLA(center, length / 2, angle + 180);
+        let line2 = this.getLineBySLA(center, length / 2, angle);
+        p1 = line1[1];
+        p2 = line2[1];
+      } else if (side === 'end') {
+        p1 = line[0];
+        let newLine = this.getLineBySLA(p1, length, angle);
+        p2 = newLine[1];
+      } else if (side === 'start') {
+        p2 = line[1];
+        let newLine = this.getLineBySLA(p2, length, angle + 180);
+        p1 = newLine[1];
+      }
+      return [p1, p2];
+    };
+    this.getParallelLine = (points, offset) => {
+      let lines = [];
+      let length = points.length;
+      if (length === 2) {
+        let p1 = this.getPrepFromLine([points[0], points[1]], points[0], offset);
+        let p2 = this.getPrepFromLine([points[0], points[1]], points[1], offset);
+        return [p1, p2];
+      }
+      for (var i = 1; i <= length; i++) {
+        var point = points[i];
+        if (i === length) {
+          break;
+        }
+        var beforePoint = points[i - 1];
+        var p1 = this.getPrepFromLine([beforePoint, point], beforePoint, offset);
+        var p2 = this.getPrepFromLine([beforePoint, point], point, offset);
+        lines.push([p1, p2]);
+      }
+      let res = [];
+      length = lines.length;
+      for (let i = 0; i < length; i++) {
+        let line = lines[i];
+        let beforeLine = lines[i - 1];
+        if (i === 0) {
+          points.push([line[0][0], line[0][1]]);
+          continue;
+        }
+        let meet = this.getMeet(beforeLine, line);
+        if (meet) {
+          res.push(meet);
+        }
+        if (i === length - 1) {
+          points.push([line[1][0], line[1][1]]);
+        }
+      }
+      return res;
+    };
+    this.getPointsByDivide = (line, divide) => {
+      let [p1, p2] = line;
+      let deltaX = this.fix(p2[0] - p1[0]),
+        deltaY = this.fix(p2[1] - p1[1]);
+      let uX = deltaX / divide,
+        uY = deltaY / divide;
+      let points = [];
+      for (let i = 1; i < divide; i++) {
+        points.push([p1[0] + i * uX, p1[1] + i * uY]);
+      }
+      return points;
+    };
+    this.fix = value => {
+      return parseFloat(value.toFixed(6));
+    };
+    this.setLineByAngle = (line, angle) => {
+      let length = this.getLength(line);
+      if (!length) {
+        return line;
+      }
+      angle = angle % 360;
+      return this.getLineBySLA([line[0][0], line[0][1]], length, angle);
+    };
+    this.getNumberByStep = (number, step) => Math.round(number / step) * step;
+    this.setLineByOrtho = (line, ortho) => this.setLineByAngle(line, this.getNumberByStep(this.getAngle(line), ortho));
+    this.rotateSpline = (points, angle, center) => {
+      let Points = JSON.parse(JSON.stringify(points));
+      for (var i = 0; i < Points.length; i++) {
+        let p = Points[i];
+        let line = [[...center], [p[0], p[1]]];
+        let lineAngle = this.getAngle(line);
+        line = this.setLineByAngle(line, angle + lineAngle);
+        p[0] = line[1][0];
+        p[1] = line[1][1];
+      }
+      return Points;
+    };
+    this.isPointInPath = (points, point) => {
+      let meets = 0;
+      for (let i = 0; i < points.length; i++) {
+        let curentPoint = points[i],
+          nextPoint;
+        if (i === points.length - 1) {
+          nextPoint = points[0];
+        } else {
+          nextPoint = points[i + 1];
+        }
+        let meet = this.getInnerMeet([[point[0], point[1]], [9999999999, point[1]]], [[curentPoint[0], curentPoint[1]], [nextPoint[0], nextPoint[1]]]);
+        if (meet !== false) {
+          meets++;
+        }
+      }
+      return meets % 2 !== 0;
+    };
+    this.getDXF = (list = []) => {
+      var get = {
+        line: function (line) {
+          let [p1, p2] = line;
+          let res = '';
+          res += "LINE" + "\r\n" + "8" + "\r\n" + "1" + "\r\n" + "62" + "\r\n" + "0" + "\r\n" + "10" + "\r\n" + p1[0] + "\r\n" + "20" + "\r\n" + p1[1] * -1 + "\r\n" + "30" + "\r\n" + "0.0" + "\r\n" + "11" + "\r\n" + p2[0] + "\r\n" + "21" + "\r\n" + p2[1] * -1 + "\r\n" + "31" + "\r\n" + "0.0" + "\r\n" + "0" + "\r\n";
+          return res;
+        },
+        rect: function (rect) {
+          let [p1, p2] = rect;
+          var rectangle = '';
+          rectangle += this.line([[p1[0], p1[1]], [p2[0], p2[1]]]);
+          rectangle += this.line([[p2[0], p1[1]], [p2[0], p2[1]]]);
+          rectangle += this.line([[p2[0], p2[1]], [p1[0], p2[1]]]);
+          rectangle += this.line([[p1[0], p2[1]], [p1[0], p1[1]]]);
+          return rectangle;
+        },
+        arc: function (arc) {
+          let {
+            x,
+            y,
+            r,
+            slice = [0, 360]
+          } = arc;
+          let res = '';
+          res += "ARC" + "\r\n" + "8" + "\r\n" + "1" + "\r\n" + "62" + "\r\n" + "0" + "\r\n" + "10" + "\r\n" + x + "\r\n" + "20" + "\r\n" + y * -1 + "\r\n" + "30" + "\r\n" + "0.0" + "\r\n" + "40" + "\r\n" + r + "\r\n" + "50" + "\r\n" + slice[0] + "\r\n" + "51" + "\r\n" + slice[1] + "\r\n" + "0" + "\r\n";
+          return arc;
+        }
+      };
+      let entities = '';
+      for (let i = 0; i < list.length; i++) {
+        var {
+          type,
+          obj
+        } = list[i];
+        entities += get[type](obj);
+      }
+      var dxfText = "0" + "\r\n" + "SECTION" + "\r\n" + "2" + "\r\n" + "ENTITIES" + "\r\n" + "0" + "\r\n";
+      dxfText += entities;
+      dxfText += "ENDSEC" + "\r\n" + "0" + "\r\n" + "EOF";
+      return dxfText;
+    };
+  }
+}
+export function GetCities() {
+  return {
+    "آذربایجان شرقی": ["اسکو", "اهر", "ایلخچی", "آبش احمد", "آذرشهر", "آقکند", "باسمنج", "بخشایش", "بستان آباد", "بناب", "بناب جدید", "تبریز", "ترک", "ترکمانچای", "تسوج", "تیکمه داش", "جلفا", "خاروانا", "خامنه", "خراجو", "خسروشهر", "خضرلو", "خمارلو", "خواجه", "دوزدوزان", "زرنق", "زنوز", "سراب", "سردرود", "سهند", "سیس", "سیه رود", "شبستر", "شربیان", "شرفخانه", "شندآباد", "صوفیان", "عجب شیر", "قره آغاج", "کشکسرای", "کلوانق", "کلیبر", "کوزه کنان", "گوگان", "لیلان", "مراغه", "مرند", "ملکان", "ملک کیان", "ممقان", "مهربان", "میانه", "نظرکهریزی", "هادی شهر", "هرگلان", "هریس", "هشترود", "هوراند", "وایقان", "ورزقان", "یامچی"],
+    "آذربایجان غربی": ["ارومیه", "اشنویه", "ایواوغلی", "آواجیق", "باروق", "بازرگان", "بوکان", "پلدشت", "پیرانشهر", "تازه شهر", "تکاب", "چهاربرج", "خوی", "دیزج دیز", "ربط", "سردشت", "سرو", "سلماس", "سیلوانه", "سیمینه", "سیه چشمه", "شاهین دژ", "شوط", "فیرورق", "قره ضیاءالدین", "قطور", "قوشچی", "کشاورز", "گردکشانه", "ماکو", "محمدیار", "محمودآباد", "مهاباد", "میاندوآب", "میرآباد", "نالوس", "نقده", "نوشین"],
+    "اردبیل": ["اردبیل", "اصلاندوز", "آبی بیگلو", "بیله سوار", "پارس آباد", "تازه کند", "تازه کندانگوت", "جعفرآباد", "خلخال", "رضی", "سرعین", "عنبران", "فخرآباد", "کلور", "کوراییم", "گرمی", "گیوی", "لاهرود", "مشگین شهر", "نمین", "نیر", "هشتجین", "هیر"],
+    "اصفهان": ["ابریشم", "ابوزیدآباد", "اردستان", "اژیه", "اصفهان", "افوس", "انارک", "ایمانشهر", "آران وبیدگل", "بادرود", "باغ بهادران", "بافران", "برزک", "برف انبار", "بهاران شهر", "بهارستان", "بوئین و میاندشت", "پیربکران", "تودشک", "تیران", "جندق", "جوزدان", "جوشقان و کامو", "چادگان", "چرمهین", "چمگردان", "حبیب آباد", "حسن آباد", "حنا", "خالدآباد", "خمینی شهر", "خوانسار", "خور", "خورزوق", "داران", "دامنه", "درچه", "دستگرد", "دهاقان", "دهق", "دولت آباد", "دیزیچه", "رزوه", "رضوانشهر", "زاینده رود", "زرین شهر", "زواره", "زیباشهر", "سده لنجان", "سفیدشهر", "سگزی", "سمیرم", "شاهین شهر", "شهرضا", "طالخونچه", "عسگران", "علویجه", "فرخی", "فریدونشهر", "فلاورجان", "فولادشهر", "قمصر", "قهجاورستان", "قهدریجان", "کاشان", "کرکوند", "کلیشاد و سودرجان", "کمشچه", "کمه", "کهریزسنگ", "کوشک", "کوهپایه", "گرگاب", "گزبرخوار", "گلپایگان", "گلدشت", "گلشهر", "گوگد", "لای بید", "مبارکه", "مجلسی", "محمدآباد", "مشکات", "منظریه", "مهاباد", "میمه", "نائین", "نجف آباد", "نصرآباد", "نطنز", "نوش آباد", "نیاسر", "نیک آباد", "هرند", "ورزنه", "ورنامخواست", "وزوان", "ونک"],
+    "البرز": ["اسارا", "اشتهارد", "تنکمان", "تهران دشت", "چهارباغ", "ساوجبلاغ", "سعید آباد", "شهر جدید هشتگرد", "طالقان", "فردیس", "کرج", "کردان", "کمال شهر", "کوهسار", "گرمدره", "گلبهار", "ماهدشت", "محمدشهر", "مشکین دشت", "نظرآباد", "هشتگرد"],
+    "ایلام": ["ارکواز", "ایلام", "ایوان", "آبدانان", "آسمان آباد", "بدره", "پهله", "توحید", "چوار", "دره شهر", "دلگشا", "دهلران", "زرنه", "سراب باغ", "سرابله", "صالح آباد", "لومار", "مهران", "مورموری", "موسیان", "میمه"],
+    "بوشهر": ["امام حسن", "انارستان", "اهرم", "آب پخش", "آبدان", "برازجان", "بردخون", "بندردیر", "بندردیلم", "بندرریگ", "بندرکنگان", "بندرگناوه", "بنک", "بوشهر", "تنگ ارم", "جم", "چغادک", "خارک", "خورموج", "دالکی", "دلوار", "ریز", "سعدآباد", "سیراف", "شبانکاره", "شنبه", "عسلویه", "کاکی", "کلمه", "نخل تقی", "وحدتیه"],
+    "تهران": ["ارجمند", "اسلامشهر", "اندیشه", "آبسرد", "آبعلی", "باغستان", "باقرشهر", "بومهن", "پاکدشت", "پردیس", "پرند", "پیشوا", "تهران", "جوادآباد", "چهاردانگه", "حسن آباد", "دماوند", "دیزین", "شهر ری", "رباط کریم", "رودهن", "شاهدشهر", "شریف آباد", "شمشک", "شهریار", "صالح آباد", "صباشهر", "صفادشت", "فردوسیه", "فشم", "فیروزکوه", "قدس", "قرچک", "قیامدشت", "کهریزک", "کیلان", "گلستان", "لواسان", "مارلیک", "ملارد", "میگون", "نسیم شهر", "نصیرآباد", "وحیدیه", "ورامین"],
+    "چهارمحال و بختیاری": ["اردل", "آلونی", "باباحیدر", "بروجن", "بلداجی", "بن", "جونقان", "چلگرد", "سامان", "سفیددشت", "سودجان", "سورشجان", "شلمزار", "شهرکرد", "طاقانک", "فارسان", "فرادنبه", "فرخ شهر", "کیان", "گندمان", "گهرو", "لردگان", "مال خلیفه", "ناغان", "نافچ", "نقنه", "هفشجان"],
+    "خراسان جنوبی": ["ارسک", "اسدیه", "اسفدن", "اسلامیه", "آرین شهر", "آیسک", "بشرویه", "بیرجند", "حاجی آباد", "خضری دشت بیاض", "خوسف", "زهان", "سرایان", "سربیشه", "سه قلعه", "شوسف", "طبس ", "فردوس", "قاین", "قهستان", "محمدشهر", "مود", "نهبندان", "نیمبلوک"],
+    "خراسان رضوی": ["احمدآباد صولت", "انابد", "باجگیران", "باخرز", "بار", "بایگ", "بجستان", "بردسکن", "بیدخت", "بینالود", "تایباد", "تربت جام", "تربت حیدریه", "جغتای", "جنگل", "چاپشلو", "چکنه", "چناران", "خرو", "خلیل آباد", "خواف", "داورزن", "درگز", "در رود", "دولت آباد", "رباط سنگ", "رشتخوار", "رضویه", "روداب", "ریوش", "سبزوار", "سرخس", "سفیدسنگ", "سلامی", "سلطان آباد", "سنگان", "شادمهر", "شاندیز", "ششتمد", "شهرآباد", "شهرزو", "صالح آباد", "طرقبه", "عشق آباد", "فرهادگرد", "فریمان", "فیروزه", "فیض آباد", "قاسم آباد", "قدمگاه", "قلندرآباد", "قوچان", "کاخک", "کاریز", "کاشمر", "کدکن", "کلات", "کندر", "گلمکان", "گناباد", "لطف آباد", "مزدآوند", "مشهد", "ملک آباد", "نشتیفان", "نصرآباد", "نقاب", "نوخندان", "نیشابور", "نیل شهر", "همت آباد", "یونسی"],
+    "خراسان شمالی": ["اسفراین", "ایور", "آشخانه", "بجنورد", "پیش قلعه", "تیتکانلو", "جاجرم", "حصارگرمخان", "درق", "راز", "سنخواست", "شوقان", "شیروان", "صفی آباد", "فاروج", "قاضی", "گرمه", "لوجلی"],
+    "خوزستان": ["اروندکنار", "الوان", "امیدیه", "اندیمشک", "اهواز", "ایذه", "آبادان", "آغاجاری", "باغ ملک", "بستان", "بندرامام خمینی", "بندرماهشهر", "بهبهان", "ترکالکی", "جایزان", "چمران", "چویبده", "حر", "حسینیه", "حمزه", "حمیدیه", "خرمشهر", "دارخوین", "دزآب", "دزفول", "دهدز", "رامشیر", "رامهرمز", "رفیع", "زهره", "سالند", "سردشت", "سوسنگرد", "شادگان", "شاوور", "شرافت", "شوش", "شوشتر", "شیبان", "صالح شهر", "صفی آباد", "صیدون", "قلعه تل", "قلعه خواجه", "گتوند", "لالی", "مسجدسلیمان", "ملاثانی", "میانرود", "مینوشهر", "هفتگل", "هندیجان", "هویزه", "ویس"],
+    "زنجان": ["ابهر", "ارمغان خانه", "آب بر", "چورزق", "حلب", "خرمدره", "دندی", "زرین آباد", "زرین رود", "زنجان", "سجاس", "سلطانیه", "سهرورد", "صائین قلعه", "قیدار", "گرماب", "ماه نشان", "هیدج"],
+    "سمنان": ["امیریه", "ایوانکی", "آرادان", "بسطام", "بیارجمند", "دامغان", "درجزین", "دیباج", "سرخه", "سمنان", "شاهرود", "شهمیرزاد", "کلاته خیج", "گرمسار", "مجن", "مهدی شهر", "میامی"],
+    "سیستان و بلوچستان": ["ادیمی", "اسپکه", "ایرانشهر", "بزمان", "بمپور", "بنت", "بنجار", "پیشین", "جالق", "چابهار", "خاش", "دوست محمد", "راسک", "زابل", "زابلی", "زاهدان", "زهک", "سراوان", "سرباز", "سوران", "سیرکان", "علی اکبر", "فنوج", "قصرقند", "کنارک", "گشت", "گلمورتی", "محمدان", "محمدآباد", "محمدی", "میرجاوه", "نصرت آباد", "نگور", "نوک آباد", "نیک شهر", "هیدوچ"],
+    "فارس": ["اردکان", "ارسنجان", "استهبان", "اشکنان", "افزر", "اقلید", "امام شهر", "اهل", "اوز", "ایج", "ایزدخواست", "آباده", "آباده طشک", "باب انار", "بالاده", "بنارویه", "بهمن", "بوانات", "بیرم", "بیضا", "جنت شهر", "جهرم", "جویم", "زرین دشت", "حسن آباد", "خان زنیان", "خاوران", "خرامه", "خشت", "خنج", "خور", "داراب", "داریان", "دبیران", "دژکرد", "دهرم", "دوبرجی", "رامجرد", "رونیز", "زاهدشهر", "زرقان", "سده", "سروستان", "سعادت شهر", "سورمق", "سیدان", "ششده", "شهرپیر", "شهرصدرا", "شیراز", "صغاد", "صفاشهر", "علامرودشت", "فدامی", "فراشبند", "فسا", "فیروزآباد", "قائمیه", "قادرآباد", "قطب آباد", "قطرویه", "قیر", "کارزین (فتح آباد)", "کازرون", "کامفیروز", "کره ای", "کنارتخته", "کوار", "گراش", "گله دار", "لار", "لامرد", "لپویی", "لطیفی", "مبارک آباددیز", "مرودشت", "مشکان", "مصیری", "مهر", "میمند", "نوبندگان", "نوجین", "نودان", "نورآباد", "نی ریز", "وراوی"],
+    "قزوین": ["ارداق", "اسفرورین", "اقبالیه", "الوند", "آبگرم", "آبیک", "آوج", "بوئین زهرا", "بیدستان", "تاکستان", "خاکعلی", "خرمدشت", "دانسفهان", "رازمیان", "سگزآباد", "سیردان", "شال", "شریفیه", "ضیاآباد", "قزوین", "کوهین", "محمدیه", "محمودآباد نمونه", "معلم کلایه", "نرجه"],
+    "قم": ["جعفریه", "دستجرد", "سلفچگان", "قم", "قنوات", "کهک"],
+    "کردستان": ["آرمرده", "بابارشانی", "بانه", "بلبان آباد", "بوئین سفلی", "بیجار", "چناره", "دزج", "دلبران", "دهگلان", "دیواندره", "زرینه", "سروآباد", "سریش آباد", "سقز", "سنندج", "شویشه", "صاحب", "قروه", "کامیاران", "کانی دینار", "کانی سور", "مریوان", "موچش", "یاسوکند"],
+    "کرمان": ["اختیارآباد", "ارزوئیه", "امین شهر", "انار", "اندوهجرد", "باغین", "بافت", "بردسیر", "بروات", "بزنجان", "بم", "بهرمان", "پاریز", "جبالبارز", "جوپار", "جوزم", "جیرفت", "چترود", "خاتون آباد", "خانوک", "خورسند", "درب بهشت", "دهج", "رابر", "راور", "راین", "رفسنجان", "رودبار", "ریحان شهر", "زرند", "زنگی آباد", "زیدآباد", "سیرجان", "شهداد", "شهربابک", "صفائیه", "عنبرآباد", "فاریاب", "فهرج", "قلعه گنج", "کاظم آباد", "کرمان", "کشکوئیه", "کهنوج", "کوهبنان", "کیانشهر", "گلباف", "گلزار", "لاله زار", "ماهان", "محمدآباد", "محی آباد", "مردهک", "مس سرچشمه", "منوجان", "نجف شهر", "نرماشیر", "نظام شهر", "نگار", "نودژ", "هجدک", "یزدان شهر"],
+    "کرمانشاه": ["ازگله", "اسلام آباد غرب", "باینگان", "بیستون", "پاوه", "تازه آباد", "جوان رود", "حمیل", "ماهیدشت", "روانسر", "سرپل ذهاب", "سرمست", "سطر", "سنقر", "سومار", "شاهو", "صحنه", "قصرشیرین", "کرمانشاه", "کرندغرب", "کنگاور", "کوزران", "گهواره", "گیلانغرب", "میان راهان", "نودشه", "نوسود", "هرسین", "هلشی"],
+    "کهگیلویه و بویراحمد": ["باشت", "پاتاوه", "چرام", "چیتاب", "دهدشت", "دوگنبدان", "دیشموک", "سوق", "سی سخت", "قلعه رئیسی", "گراب سفلی", "لنده", "لیکک", "مادوان", "مارگون", "یاسوج"],
+    "گلستان": ["انبارآلوم", "اینچه برون", "آزادشهر", "آق قلا", "بندرترکمن", "بندرگز", "جلین", "خان ببین", "دلند", "رامیان", "سرخنکلاته", "سیمین شهر", "علی آباد کتول", "فاضل آباد", "کردکوی", "کلاله", "گالیکش", "گرگان", "گمیش تپه", "گنبدکاووس", "مراوه", "مینودشت", "نگین شهر", "نوده خاندوز", "نوکنده"],
+    "لرستان": ["ازنا", "اشترینان", "الشتر", "الیگودرز", "بروجرد", "پلدختر", "چالانچولان", "چغلوندی", "چقابل", "خرم آباد", "درب گنبد", "دورود", "زاغه", "سپیددشت", "سراب دوره", "فیروزآباد", "کونانی", "کوهدشت", "گراب", "معمولان", "مومن آباد", "نورآباد", "ویسیان"],
+    "گیلان": ["احمدسرگوراب", "اسالم", "اطاقور", "املش", "آستارا", "آستانه اشرفیه", "بازار جمعه", "بره سر", "بندرانزلی", "پره سر", "پیربازار", "تالش", "توتکابن", "جیرنده", "چابکسر", "چاف و چمخاله", "چوبر", "حویق", "خشکبیجار", "خمام", "دیلمان", "زیباکنار", "رانکوه", "رحیم آباد", "رستم آباد", "رشت", "رضوانشهر", "رودبار", "رودبنه", "رودسر", "سنگر", "سیاهکل", "شفت", "شلمان", "صومعه سرا", "فومن", "کلاچای", "کوچصفهان", "کومله", "کیاشهر", "گوراب زرمیخ", "لاهیجان", "لشت نشا", "لنگرود", "لوشان", "لولمان", "لوندویل", "لیسار", "ماسال", "ماسوله", "مرجقل", "منجیل", "واجارگاه"],
+    "مازندران": ["امیرکلا", "ایزدشهر", "آلاشت", "آمل", "بابل", "بابلسر", "بلده", "بهشهر", "بهنمیر", "پل سفید", "تنکابن", "جویبار", "چالوس", "چمستان", "خرم آباد", "خلیل شهر", "خوش رودپی", "دابودشت", "رامسر", "رستمکلا", "رویان", "رینه", "زرگرمحله", "زیرآب", "سادات شهر", "ساری", "سرخرود", "سلمان شهر", "سورک", "شیرگاه", "شیرود", "عباس آباد", "فریدونکنار", "فریم", "قائم شهر", "کتالم", "کلارآباد", "کلاردشت", "کله بست", "کوهی خیل", "کیاسر", "کیاکلا", "گتاب", "گزنک", "گلوگاه", "محمودآباد", "مرزن آباد", "مرزیکلا", "نشتارود", "نکا", "نور", "نوشهر"],
+    "مرکزی": ["اراک", "آستانه", "آشتیان", "پرندک", "تفرش", "توره", "جاورسیان", "خشکرود", "خمین", "خنداب", "داودآباد", "دلیجان", "رازقان", "زاویه", "ساروق", "ساوه", "سنجان", "شازند", "غرق آباد", "فرمهین", "قورچی باشی", "کرهرود", "کمیجان", "مامونیه", "محلات", "مهاجران", "میلاجرد", "نراق", "نوبران", "نیمور", "هندودر"],
+    "هرمزگان": ["ابوموسی", "بستک", "بندرجاسک", "بندرچارک", "بندرخمیر", "بندرعباس", "بندرلنگه", "بیکا", "پارسیان", "تخت", "جناح", "حاجی آباد", "درگهان", "دهبارز", "رویدر", "زیارتعلی", "سردشت", "سندرک", "سوزا", "سیریک", "فارغان", "فین", "قشم", "قلعه قاضی", "کنگ", "کوشکنار", "کیش", "گوهران", "میناب", "هرمز", "هشتبندی"],
+    "همدان": ["ازندریان", "اسدآباد", "برزول", "بهار", "تویسرکان", "جورقان", "جوکار", "دمق", "رزن", "زنگنه", "سامن", "سرکان", "شیرین سو", "صالح آباد", "فامنین", "فرسفج", "فیروزان", "قروه درجزین", "قهاوند", "کبودر آهنگ", "گل تپه", "گیان", "لالجین", "مریانج", "ملایر", "نهاوند", "همدان"],
+    "یزد": ["ابرکوه", "احمدآباد", "اردکان", "اشکذر", "بافق", "بفروئیه", "بهاباد", "تفت", "حمیدیا", "خضرآباد", "دیهوک", "رضوانشهر", "زارچ", "شاهدیه", "طبس", "عقدا", "مروست", "مهردشت", "مهریز", "میبد", "ندوشن", "نیر", "هرات", "یزد"]
+  };
+}
+export function Get2Digit(n) {
+  let ns = n.toString();
+  return ns.length === 1 ? '0' + ns : ns;
+}
+function svgArcRange(centerX, centerY, radius, angleInDegrees) {
+  let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+  return {
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians)
+  };
+}
+export function svgArc(x, y, radius, startAngle, endAngle) {
+  if (startAngle === endAngle || endAngle - startAngle === 360) {
+    startAngle = 0;
+    endAngle = 360;
+  }
+  if (startAngle === 360) {
+    startAngle = 359.99;
+  }
+  if (endAngle === 360) {
+    endAngle = 359.99;
+  }
+  let start = svgArcRange(x, y, radius, endAngle);
+  let end = svgArcRange(x, y, radius, startAngle);
+  let largeArcFlag;
+  if (endAngle - startAngle < -180) {
+    largeArcFlag = '0';
+  } else if (endAngle - startAngle < 0) {
+    //console.log(1)
+    largeArcFlag = '1';
+  } else if (endAngle - startAngle <= 180) {
+    //console.log(2)
+    largeArcFlag = '0';
+  } else if (endAngle - startAngle <= 360) {
+    //console.log(3)
+    largeArcFlag = '1';
+  } else {
+    //console.log(4)
+    largeArcFlag = '0';
+  }
+  let d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+  return d;
+}
+export function getValueByField(data, field, def) {
+  let a;
+  try {
+    eval(`a = data.${field}`);
+  } catch {}
+  return a === undefined ? def : a;
+}
+export function setValueByField(data = {}, field, value) {
+  try {
+    field = field.replace(/\[/g, '.').replace(/\]/g, '');
+  } catch {}
+  let fields = field.split('.');
+  let node = data;
+  for (let i = 0; i < fields.length - 1; i++) {
+    let f = fields[i];
+    if (!f) {
+      continue;
+    }
+    if (node[f] === undefined) {
+      if (isNaN(+fields[i + 1])) {
+        node[f] = {};
+      } else {
+        node[f] = [];
+      }
+      node = node[f];
+    } else {
+      node = node[f];
+    }
+  }
+  node[fields[fields.length - 1]] = value;
+  return data;
+}
+export class Storage {
+  constructor(id) {
+    _defineProperty(this, "model", void 0);
+    _defineProperty(this, "time", void 0);
+    _defineProperty(this, "init", void 0);
+    _defineProperty(this, "saveStorage", void 0);
+    _defineProperty(this, "getParent", void 0);
+    _defineProperty(this, "removeValueByField", void 0);
+    _defineProperty(this, "setValueByField", void 0);
+    _defineProperty(this, "getValueByField", void 0);
+    _defineProperty(this, "save", void 0);
+    _defineProperty(this, "remove", void 0);
+    _defineProperty(this, "load", void 0);
+    _defineProperty(this, "clear", void 0);
+    _defineProperty(this, "download", void 0);
+    _defineProperty(this, "export", void 0);
+    _defineProperty(this, "read", void 0);
+    _defineProperty(this, "import", void 0);
+    _defineProperty(this, "getModel", void 0);
+    this.model = {};
+    this.time = {};
+    this.init = () => {
+      let storage = localStorage.getItem('storageClass' + id);
+      let timeStorage = localStorage.getItem('storageClassTime' + id);
+      let model, time;
+      if (storage === undefined || storage === null) {
+        model = {};
+      } else {
+        model = JSON.parse(storage);
+      }
+      if (timeStorage === undefined || timeStorage === null) {
+        time = {};
+      } else {
+        time = JSON.parse(timeStorage);
+      }
+      this.model = model;
+      this.time = time;
+      this.saveStorage(model, time);
+    };
+    this.saveStorage = (model, time) => {
+      localStorage.setItem('storageClass' + id, JSON.stringify(model));
+      localStorage.setItem('storageClassTime' + id, JSON.stringify(time));
+    };
+    this.getParent = field => {
+      let fields = field.split('.');
+      let parent = this.model;
+      for (let i = 0; i < fields.length - 1; i++) {
+        parent = parent[fields[i]];
+        if (typeof parent !== 'object') {
+          return;
+        }
+      }
+      return parent;
+    };
+    this.removeValueByField = field => {
+      let fields = field.split('.');
+      let parent = this.getParent(field);
+      let lastField = fields[fields.length - 1];
+      let newParent = {};
+      for (let prop in parent) {
+        if (prop !== lastField) {
+          newParent[prop] = parent[prop];
+        }
+      }
+      fields.pop();
+      return this.setValueByField(fields.join('.'), newParent);
+    };
+    this.setValueByField = (field, value) => {
+      if (!field) {
+        this.model = value;
+        return;
+      }
+      var fields = field.split('.');
+      var parent = this.model;
+      for (let i = 0; i < fields.length - 1; i++) {
+        let f = fields[i];
+        if (parent[f] === undefined) {
+          parent[f] = {};
+        }
+        parent = parent[f];
+      }
+      parent[fields[fields.length - 1]] = value;
+      return this.getValueByField(fields[0]);
+    };
+    this.getValueByField = field => {
+      let fields = field.split('.');
+      let model = this.model;
+      let parent = {
+        ...model
+      };
+      for (let i = 0; i < fields.length - 1; i++) {
+        parent = parent[fields[i]];
+        if (typeof parent !== 'object') {
+          return;
+        }
+      }
+      return parent[fields[fields.length - 1]];
+    };
+    this.save = (field, value) => {
+      try {
+        value = JSON.parse(JSON.stringify(value));
+      } catch {
+        value = value;
+      }
+      if (!field || field === null) {
+        return {};
+      }
+      let res = this.setValueByField(field, value);
+      this.time[field] = new Date().getTime();
+      this.saveStorage(this.model, this.time);
+      return res;
+    };
+    this.remove = (field, callback = () => {}) => {
+      let res = this.removeValueByField(field);
+      let newTime = {};
+      for (let prop in this.time) {
+        if (prop !== field) {
+          newTime[prop] = this.time[prop];
+        }
+      }
+      this.time = newTime;
+      this.saveStorage(this.model, this.time);
+      callback();
+      return res;
+    };
+    this.load = (field, def, time) => {
+      let value = this.getValueByField(field);
+      if (time && value !== undefined) {
+        let thisTime = new Date().getTime();
+        let lastTime = this.time[field] || thisTime;
+        let dif = Math.abs(thisTime - lastTime);
+        if (dif > time) {
+          value = undefined;
+        }
+      }
+      if (value === undefined && def !== undefined) {
+        value = typeof def === 'function' ? def() : def;
+        this.save(field, def);
+      }
+      return value;
+    };
+    this.clear = () => {
+      this.model = {};
+      this.time = {};
+      this.saveStorage(this.model, this.time);
+    };
+    this.download = (file, name) => {
+      if (!name || name === null) {
+        return;
+      }
+      let text = JSON.stringify(file);
+      let element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', name);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    };
+    this.export = () => {
+      let name = window.prompt('Please Inter File Name');
+      if (name === null || !name) {
+        return;
+      }
+      this.download({
+        model: this.model,
+        time: this.time
+      }, name);
+    };
+    this.read = (file, callback = () => {}) => {
+      var fr = new FileReader();
+      fr.onload = () => {
+        try {
+          callback(JSON.parse(fr.result));
+        } catch {
+          return;
+        }
+      };
+      fr.readAsText(file);
+    };
+    this.import = (file, callback = () => {}) => {
+      this.read(file, obj => {
+        if (obj === undefined) {
+          return;
+        }
+        let {
+          model,
+          time
+        } = obj;
+        this.model = model;
+        this.time = time;
+        this.saveStorage(this.model, this.time);
+        callback();
+      });
+    };
+    this.getModel = () => {
+      return JSON.parse(JSON.stringify(this.model));
+    };
+    this.init();
+  }
+}
+export class DateData {
+  constructor() {
+    _defineProperty(this, "data", void 0);
+    _defineProperty(this, "setDayValue", void 0);
+    _defineProperty(this, "getYearDic", void 0);
+    _defineProperty(this, "getMonthDic", void 0);
+    _defineProperty(this, "getDayDic", void 0);
+    _defineProperty(this, "getDayValue", void 0);
+    _defineProperty(this, "getMonthList", void 0);
+    _defineProperty(this, "getYearList", void 0);
+    _defineProperty(this, "getWeekList", void 0);
+    _defineProperty(this, "d", void 0);
+    this.data = {};
+    this.d = new AIODate();
+    this.getYearDic = ([Year]) => {
+      let year = this.data[Year.toString()];
+      if (!year) {
+        this.data[Year.toString()] = {};
+        year = this.data[Year.toString()];
+      }
+      return year;
+    };
+    this.getMonthDic = ([Year, Month]) => {
+      let year = this.getYearDic([Year]);
+      let month = year[Month.toString()];
+      if (!month) {
+        year[Month.toString()] = {};
+        month = year[Month.toString()];
+      }
+      return month;
+    };
+    this.getDayDic = ([Year, Month, Day]) => {
+      let month = this.getMonthDic([Year, Month]);
+      let day = month[Day.toString()];
+      if (!day) {
+        month[Day.toString()] = {};
+        day = month[Day.toString()];
+      }
+      return day;
+    };
+    this.getDayValue = ([Year, Month, Day], field) => {
+      let dayData = this.getDayDic([Year, Month, Day]);
+      return getValueByField(dayData, field);
+    };
+    this.setDayValue = (dateArray, data) => {
+      let day = this.getDayDic(dateArray);
+      for (let prop in data) {
+        day[prop] = data[prop];
+      }
+    };
+    this.getMonthList = ([Year, Month], field) => {
+      const daysLength = this.d.getMonthDaysLength([Year, Month]);
+      let list = [];
+      for (let i = 1; i <= daysLength; i++) {
+        let date = [Year, Month, i];
+        let dayRes = this.getDayValue(date, field);
+        if (dayRes !== undefined) {
+          list.push({
+            date,
+            value: dayRes
+          });
+        }
+      }
+      return list;
+    };
+    this.getWeekList = ([Year, Month, Day], field) => {
+      let days = this.d.getDaysOfWeek([Year, Month, Day]);
+      let list = [];
+      for (let i = 0; i < days.length; i++) {
+        let date = days[i];
+        let dayRes = this.getDayValue(date, field);
+        if (dayRes !== undefined) {
+          list.push({
+            date,
+            value: dayRes
+          });
+        }
+      }
+      return list;
+    };
+    this.getYearList = ([Year], field) => {
+      let list = [];
+      for (let i = 1; i <= 12; i++) {
+        list = list.concat(this.getMonthList([Year, i], field));
+      }
+      return list;
+    };
+  }
+}
+export function DisabledContextMenu() {
+  window.addEventListener(`contextmenu`, e => e.preventDefault());
+}

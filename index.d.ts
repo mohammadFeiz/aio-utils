@@ -22,6 +22,7 @@ export declare function DownloadFile(file: any): Promise<void>;
 export declare function GetFileUrl(file: any): string;
 export declare function Stall(stallTime?: number): Promise<void>;
 export declare function FileToBase64(file: any, callback: (result: any) => void): void;
+export declare function GetPrecisionCount(number: number): number;
 export declare function HandleBackButton(callback?: () => void): void;
 export declare function ParseString(str: string): any;
 export declare class DragClass {
@@ -32,7 +33,7 @@ export declare class DragClass {
     drop: (e: any, list: any[]) => void;
     swap: (arr: any[], from: any, to: any) => any[];
     className: string;
-    getAttrs: (list: any[], index: number) => void;
+    getAttrs: (list: any[], index: number) => any;
     constructor(p: {
         onChange: (list: any[], from: any, to: any) => void;
         className: string;
@@ -316,6 +317,8 @@ export declare function GetCities(): {
 };
 export declare function Get2Digit(n: number): string;
 export declare function svgArc(x: number, y: number, radius: number, startAngle: number, endAngle: number): string;
+export declare function getValueByField(data: any, field: string, def?: any): any;
+export declare function setValueByField(data: any, field: string, value: any): any;
 type I_storage_model = {
     [key: string]: any;
 };
@@ -337,9 +340,45 @@ export declare class Storage {
     clear: () => void;
     download: (file: any, name: string) => void;
     export: () => void;
-    read: (file: any, callback: (model: I_storage_model) => void) => void;
+    read: (file: any, callback: (model: any) => void) => void;
     import: (file: any, callback: () => void) => void;
     getModel: () => I_storage_model;
     constructor(id: string);
 }
+type I_dd_dateArray = number[];
+type I_dd_data = {
+    [year: string]: I_dd_year;
+};
+type I_dd_year = {
+    [month: string]: I_dd_month;
+};
+type I_dd_month = {
+    [day: string]: I_dd_day;
+};
+type I_dd_day = any;
+export declare class DateData {
+    data: I_dd_data;
+    setDayValue: (dateArray: I_dd_dateArray, data: {
+        [key: string]: any;
+    }) => void;
+    getYearDic: (dateArray: I_dd_dateArray) => I_dd_year;
+    getMonthDic: (dateArray: I_dd_dateArray) => I_dd_month;
+    getDayDic: (dateArray: I_dd_dateArray) => I_dd_day;
+    getDayValue: (dateArray: I_dd_dateArray, field: string) => any;
+    getMonthList: (dateArray: I_dd_dateArray, field: string) => {
+        date: I_dd_dateArray;
+        value: any;
+    }[];
+    getYearList: (dateArray: I_dd_dateArray, field: string) => {
+        date: I_dd_dateArray;
+        value: any;
+    }[];
+    getWeekList: (dateArray: I_dd_dateArray, field: string) => {
+        date: I_dd_dateArray;
+        value: any;
+    }[];
+    d: AIODate;
+    constructor();
+}
+export declare function DisabledContextMenu(): void;
 export {};
