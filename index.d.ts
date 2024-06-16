@@ -1,12 +1,12 @@
-declare module 'react'
 /// <reference types="react" />
-export type I_Date = string | number | Date | {
+type I_dateObject = {
     year?: number;
     month?: number;
     day?: number;
     hour?: number;
     minute?: number;
-} | number[];
+};
+export type I_Date = string | number | Date | I_dateObject | number[];
 export type I_point = number[];
 export type I_line = [I_point, I_point];
 export type I_dline = [number, number, number];
