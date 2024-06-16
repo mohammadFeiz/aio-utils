@@ -1,3 +1,4 @@
+declare module 'react'
 /// <reference types="react" />
 export type I_Date = string | number | Date | {
     year?: number;
@@ -242,6 +243,8 @@ export declare class AIODate {
     getDateByPattern: (date: I_Date, pattern: string) => string;
     getToday: (jalali?: boolean) => number[];
     getDayIndex: (date: I_Date, unit: 'week' | 'year' | 'month') => number;
+    getYesterday: (date: I_Date) => I_Date;
+    getTomarrow: (date: I_Date) => I_Date;
     constructor();
 }
 export declare class Geo {
@@ -378,7 +381,7 @@ export declare class DateData {
         value: any;
     }[];
     d: AIODate;
-    constructor();
+    constructor(data: I_dd_data);
 }
 export declare function DisabledContextMenu(): void;
 export {};

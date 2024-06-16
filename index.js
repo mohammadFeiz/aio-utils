@@ -1,11 +1,9 @@
+import * as ReactDOMServer from 'react-dom/server';
+import $ from 'jquery';
+import { jsx as _jsx } from "react/jsx-runtime";
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-import * as ReactDOMServer from 'react-dom/server';
-import $ from 'jquery';
-
-//x,y,dip
-import { jsx as _jsx } from "react/jsx-runtime";
 export function HasClass(target, className) {
   return target.hasClass(className) || !!target.parents(`.${className}`).length;
 }
@@ -950,6 +948,8 @@ export class AIODate {
     _defineProperty(this, "getDateByPattern", void 0);
     _defineProperty(this, "getToday", void 0);
     _defineProperty(this, "getDayIndex", void 0);
+    _defineProperty(this, "getYesterday", void 0);
+    _defineProperty(this, "getTomarrow", void 0);
     this.isMatch = (date, matchers) => {
       date = this.convertToArray(date);
       for (let i = 0; i < matchers.length; i++) {
@@ -1364,6 +1364,45 @@ export class AIODate {
       }
       return res;
     };
+    this.getYesterday = date => {
+      const [year, month, day] = this.convertToArray(date);
+      let newYear = year,
+        newMonth = month,
+        newDay = day;
+      if (day === 1) {
+        if (month === 1) {
+          newYear = newYear - 1;
+          newMonth = 12;
+          newDay = this.getMonthDaysLength([newYear, newMonth]);
+        } else {
+          newMonth = newMonth - 1;
+          newDay = this.getMonthDaysLength([newYear, newMonth]);
+        }
+      } else {
+        newDay = newDay - 1;
+      }
+      return [newYear, newMonth, newDay];
+    };
+    this.getTomarrow = date => {
+      const [year, month, day] = this.convertToArray(date);
+      let newYear = year,
+        newMonth = month,
+        newDay = day;
+      const daysLength = this.getMonthDaysLength(date);
+      if (day === daysLength) {
+        if (month === 12) {
+          newYear = newYear + 1;
+          newMonth = 1;
+          newDay = 1;
+        } else {
+          newMonth = newMonth + 1;
+          newDay = this.getMonthDaysLength([newYear, newMonth]);
+        }
+      } else {
+        newDay = newDay + 1;
+      }
+      return [newYear, newMonth, newDay];
+    };
     this.getDaysOfWeek = (date, pattern) => {
       if (!date) {
         return [];
@@ -1372,9 +1411,19 @@ export class AIODate {
       let {
         index
       } = this.getWeekDay(dateArray);
-      let startDate = this.getNextTime([dateArray[0], dateArray[1], dateArray[2]], -(index + 1) * 24 * 60 * 60 * 1000);
-      let endDate = this.getNextTime([dateArray[0], dateArray[1], dateArray[2]], (7 - index) * 24 * 60 * 60 * 1000);
-      return this.getDatesBetween(startDate, endDate, 24 * 60 * 60 * 1000);
+      let firstDay = [...dateArray];
+      for (let i = 0; i < index; i++) {
+        firstDay = this.getYesterday(firstDay);
+      }
+      const res = [];
+      for (let i = 0; i < 7; i++) {
+        res.push(firstDay);
+        firstDay = this.getTomarrow(firstDay);
+      }
+      if (pattern) {
+        return res.map(o => this.getDateByPattern(o, pattern));
+      }
+      return res;
     };
     this.getDatesBetween = (date, otherDate, step = 24 * 60 * 60 * 1000) => {
       if (!date || !otherDate) {
@@ -2260,7 +2309,7 @@ export class Storage {
   }
 }
 export class DateData {
-  constructor() {
+  constructor(data) {
     _defineProperty(this, "data", void 0);
     _defineProperty(this, "setDayValue", void 0);
     _defineProperty(this, "getYearDic", void 0);
@@ -2271,7 +2320,7 @@ export class DateData {
     _defineProperty(this, "getYearList", void 0);
     _defineProperty(this, "getWeekList", void 0);
     _defineProperty(this, "d", void 0);
-    this.data = {};
+    this.data = data;
     this.d = new AIODate();
     this.getYearDic = ([Year]) => {
       let year = this.data[Year.toString()];
