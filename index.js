@@ -1396,7 +1396,7 @@ export class AIODate {
           newDay = 1;
         } else {
           newMonth = newMonth + 1;
-          newDay = this.getMonthDaysLength([newYear, newMonth]);
+          newDay = 1;
         }
       } else {
         newDay = newDay + 1;
