@@ -1499,17 +1499,21 @@ export class AIODate {
       };
     };
     this.getDaysOfMonth = (date, pattern) => {
-      let dateArray = this.convertToArray(date);
-      let firstDay = [dateArray[0], dateArray[1], 1];
-      let lastDay = this.getLastDayOfMonth(dateArray);
-      let betweenDayes = this.getDatesBetween(firstDay, lastDay, 24 * 60 * 60 * 1000);
-      let result = [firstDay];
-      result = result.concat(betweenDayes);
-      result.push(lastDay);
-      if (pattern) {
-        return result.map(o => this.getDateByPattern(o, pattern));
+      if (!date) {
+        return [];
       }
-      return result;
+      let dateArray = this.convertToArray(date);
+      let daysLength = this.getMonthDaysLength(date);
+      let firstDay = [dateArray[0], dateArray[1], 1];
+      let res = [];
+      for (let i = 0; i < daysLength; i++) {
+        res.push(firstDay);
+        firstDay = this.getTomarrow(firstDay);
+      }
+      if (pattern) {
+        return res.map(o => this.getDateByPattern(o, pattern));
+      }
+      return res;
     };
     this.getLastDayOfMonth = date => {
       let dateArray = this.convertToArray(date);
