@@ -245,6 +245,14 @@ export declare class AIODate {
     getDayIndex: (date: I_Date, unit: 'week' | 'year' | 'month') => number;
     getYesterday: (date: I_Date) => I_Date;
     getTomarrow: (date: I_Date) => I_Date;
+    toMiliseconds: (p: {
+        year?: number;
+        month?: number;
+        day?: number;
+        hour?: number;
+        minute?: number;
+        second?: number;
+    }) => number;
     constructor();
 }
 export declare class Geo {
@@ -349,7 +357,7 @@ export declare class Storage {
     constructor(id: string);
 }
 type I_dd_dateArray = number[];
-type I_dd_data = {
+export type I_dd_data = {
     [year: string]: I_dd_year;
 };
 type I_dd_year = {
@@ -359,27 +367,25 @@ type I_dd_month = {
     [day: string]: I_dd_day;
 };
 type I_dd_day = any;
-export declare class DateData {
+type I_list_item = {
+    date: I_dd_dateArray;
+    value: any;
+};
+export default class DateData {
     data: I_dd_data;
+    getToday: () => number[];
+    isToday: (date: I_dd_dateArray) => boolean;
     setDayValue: (dateArray: I_dd_dateArray, data: {
         [key: string]: any;
     }) => void;
     getYearDic: (dateArray: I_dd_dateArray) => I_dd_year;
     getMonthDic: (dateArray: I_dd_dateArray) => I_dd_month;
     getDayDic: (dateArray: I_dd_dateArray) => I_dd_day;
-    getDayValue: (dateArray: I_dd_dateArray, field: string) => any;
-    getMonthList: (dateArray: I_dd_dateArray, field: string) => {
-        date: I_dd_dateArray;
-        value: any;
-    }[];
-    getYearList: (dateArray: I_dd_dateArray, field: string) => {
-        date: I_dd_dateArray;
-        value: any;
-    }[];
-    getWeekList: (dateArray: I_dd_dateArray, field: string) => {
-        date: I_dd_dateArray;
-        value: any;
-    }[];
+    getDayValue: (dateArray: I_dd_dateArray, field?: string, def?: any) => any;
+    getMonthList: (dateArray: I_dd_dateArray, field: string, def?: any) => I_list_item[];
+    getYearList: (dateArray: I_dd_dateArray, field: string, def?: any) => I_list_item[];
+    getWeekList: (dateArray: I_dd_dateArray, field: string, def?: any) => I_list_item[];
+    getData: () => I_dd_data;
     d: AIODate;
     constructor(data: I_dd_data);
 }
