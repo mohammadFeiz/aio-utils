@@ -374,7 +374,6 @@ type I_list_item = {
 export default class DateData {
     data: I_dd_data;
     getToday: () => number[];
-    isToday: (date: I_dd_dateArray) => boolean;
     setDayValue: (dateArray: I_dd_dateArray, data: {
         [key: string]: any;
     }) => void;
