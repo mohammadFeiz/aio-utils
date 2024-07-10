@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import React from 'react';
 type I_dateObject = {
     year?: number;
     month?: number;
@@ -330,6 +331,7 @@ export declare function Get2Digit(n: number): string;
 export declare function svgArc(x: number, y: number, radius: number, startAngle: number, endAngle: number): string;
 export declare function getValueByField(data: any, field: string, def?: any): any;
 export declare function setValueByField(data: any, field: string, value: any): any;
+export declare function GetArray(count: number, fn?: (index: number) => any): any[];
 type I_storage_model = {
     [key: string]: any;
 };
