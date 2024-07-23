@@ -1,5 +1,4 @@
 /// <reference types="react" />
-import React from 'react';
 type I_dateObject = {
     year?: number;
     month?: number;
@@ -27,18 +26,15 @@ export declare function FileToBase64(file: any, callback: (result: any) => void)
 export declare function GetPrecisionCount(number: number): number;
 export declare function HandleBackButton(callback?: () => void): void;
 export declare function ParseString(str: string): any;
+export declare function ReOrder(data: any[], fromIndex: number, toIndex: number): any[];
 export declare class DragClass {
-    dragIndex: number;
-    onChange: (list: any[], from: any, to: any) => void;
-    start: (e: any) => void;
     over: (e: any) => void;
-    drop: (e: any, list: any[]) => void;
-    swap: (arr: any[], from: any, to: any) => any[];
-    className: string;
-    getAttrs: (list: any[], index: number) => any;
+    dragData: any;
+    getDragAttrs: (dragData: any) => any;
+    getDropAttrs: (dropData: any) => any;
+    reOrder: (data: any[], fromIndex: number, toIndex: number) => any[];
     constructor(p: {
-        onChange: (list: any[], from: any, to: any) => void;
-        className: string;
+        callback: (dragData: any, dropData: any) => void;
     });
 }
 export declare function GetClient(e: any): {
@@ -332,6 +328,7 @@ export declare function svgArc(x: number, y: number, radius: number, startAngle:
 export declare function getValueByField(data: any, field: string, def?: any): any;
 export declare function setValueByField(data: any, field: string, value: any): any;
 export declare function GetArray(count: number, fn?: (index: number) => any): any[];
+export declare function GetRandomNumber(from: number, to: number): number;
 type I_storage_model = {
     [key: string]: any;
 };
@@ -391,4 +388,104 @@ export default class DateData {
     constructor(data: I_dd_data);
 }
 export declare function DisabledContextMenu(): void;
+export type AV_operator = 'contain' | 'required' | '=' | '>' | '>=' | '<' | '<=' | 'startBy' | '<>' | '<=>';
+export type AV_props = {
+    lang?: 'fa' | 'en';
+    title?: string;
+    value: any;
+    validations: AV_item[];
+};
+type AV_item_object = {
+    target: any;
+    title?: string;
+    message?: string;
+    value: any;
+    operator: AV_operator;
+    not: boolean;
+    equal: boolean;
+    fn: any;
+};
+export type AV_item = string | Omit<AV_item_object, 'value' | 'equal' | 'fn'>;
+type AV_fn = 'less' | 'greater' | 'equal' | 'contain' | 'startBy' | 'required' | 'between';
+export declare class Validation {
+    contain: (target: any, value: any) => {
+        result: boolean;
+        unit: any;
+    };
+    startBy: (target: any, value: any) => {
+        result: boolean;
+        unit: any;
+    };
+    equal: (target: any, value: any, equal?: boolean) => {
+        result: boolean;
+        unit: any;
+    };
+    less: (target: any, value: any, equal?: boolean) => {
+        result: boolean;
+        unit: any;
+    };
+    greater: (target: any, value: any, equal?: boolean) => {
+        result: boolean;
+        unit: any;
+    };
+    between: (targets: any[], value: any, equal?: boolean) => {
+        result: boolean;
+        unit: any;
+    };
+    getMessage: (p: {
+        translate: string;
+        target: string;
+        message?: string;
+        title?: string;
+        unit: string;
+    }) => string;
+    translate: (operator: AV_operator, not: boolean) => string;
+    getResult: (p: AV_item_object) => string | boolean;
+    getValidation: () => string | boolean;
+    validate: () => string | boolean;
+    boolKey: (key: 'more' | 'less') => string;
+    boolDic: any;
+    getUnit: (value: any) => string;
+    constructor(props: AV_props);
+}
+export declare function ValidationTextToObject(vtext: string, Title?: string): {
+    title: string;
+    target: any;
+    not: boolean;
+    equal: boolean;
+    fn: AV_fn;
+    operator: AV_operator;
+    message: string;
+};
+type PS_validation = {
+    targets: any[];
+    not: boolean;
+    operator: AV_operator;
+    bool?: PS_bool;
+};
+type PS_filter = {
+    field: string;
+    validation: PS_validation | string;
+};
+export declare function ConvertTextToFilters(sentence: string, columns: any[]): (PS_filter | string)[];
+type PS_bool = 'و' | 'یا';
+export declare function FilterRows(rows: any[], filters: PS_filter[][]): any[];
+type I_color = any;
+type I_color_type = 'rgb' | 'hex' | 'array';
+export declare class AIOColors {
+    number_to_hex: (number: number) => string;
+    getType: (c: I_color) => I_color_type;
+    to_array: (c: I_color) => number[];
+    between: (c1: I_color, c2: I_color, count: number) => string[];
+    getBetween: (v: (string | number)[]) => I_color[];
+    to_dark: (c: I_color, percent: number) => I_color;
+    to_light: (c: I_color, percent: number) => I_color;
+    brightness: (c: I_color, percent: number) => I_color;
+    to_hex: (c: I_color) => string;
+    to_rgb: (c: I_color) => string;
+    log: (c: I_color[]) => void;
+    getRandomRGB: (c1?: I_color, c2?: I_color) => string;
+    reverse: (c: I_color) => I_color;
+    constructor();
+}
 export {};
