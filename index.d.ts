@@ -194,15 +194,16 @@ export declare class Swip {
 export declare class AIODate {
     isMatch: (date: I_Date, matchers: string[]) => boolean;
     convertToArray: (date: I_Date, jalali?: boolean) => number[];
-    isAny: (date1: I_Date, date2: I_Date, key: 'less' | 'greater' | 'equal') => boolean;
     isLess: (date1: I_Date, date2: I_Date) => boolean;
     isGreater: (date1: I_Date, date2: I_Date) => boolean;
     isEqual: (date1: I_Date, date2: I_Date) => boolean;
     isBetween: (date1: I_Date, dates: [I_Date, I_Date]) => boolean;
+    compaire: (date1: I_Date, date2: I_Date) => 'less' | 'greater' | 'equal';
     getWeekDay: (date: I_Date) => {
         weekDay: string;
         index: number;
     };
+    isToday: (date: I_Date) => boolean;
     isJalali: (date: I_Date) => boolean;
     getWeekDays: (jalali?: boolean) => string[];
     toGregorian: (date: I_Date) => number[];
@@ -250,6 +251,7 @@ export declare class AIODate {
         minute?: number;
         second?: number;
     }) => number;
+    getDateByDeltaMiliseconds: (date: I_Date, miliseconds: number) => number[];
     constructor();
 }
 export declare class Geo {
