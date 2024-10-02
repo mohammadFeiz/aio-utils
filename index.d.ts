@@ -43,7 +43,7 @@ export declare function GetClient(e: any): {
 };
 export declare function ExportToExcel(rows: any[], config?: any): void;
 export declare function SplitNumber(price: number, count?: number, splitter?: string): string;
-export declare function EventHandler(selector: string, event: 'mousedown' | 'mousemove' | 'mouseup' | 'click', action: EventListenerOrEventListenerObject, type?: 'bind' | 'unbind', passive?: boolean): void;
+export declare function EventHandler(selector: string, event: 'mousedown' | 'mousemove' | 'mouseup' | 'click', action: any, type?: 'bind' | 'unbind'): void;
 export declare function getValueByStep(p: {
     value: number;
     start: number;
@@ -442,9 +442,9 @@ export declare class Validation {
         unit: string;
     }) => string;
     translate: (operator: AV_operator, not: boolean) => string;
-    getResult: (p: AV_item_object) => string | boolean;
-    getValidation: () => string | boolean;
-    validate: () => string | boolean;
+    getResult: (p: AV_item_object) => string | undefined;
+    getValidation: () => string | undefined;
+    validate: () => string | undefined;
     boolKey: (key: 'more' | 'less') => string;
     boolDic: any;
     getUnit: (value: any) => string;
