@@ -290,6 +290,7 @@ export declare class Geo {
         type: 'line' | 'rect' | 'arc';
         obj: any;
     }[]) => string;
+    smooth: (points: I_point[], angle: number) => I_point[];
     constructor();
 }
 export declare function GetCities(): {
