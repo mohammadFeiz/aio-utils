@@ -526,5 +526,33 @@ declare class GetSvg {
     mdiSort: (color?: string) => JSX.Element;
     mdiDelete: (color?: string) => JSX.Element;
     mdiCircleSmall: (color?: string) => JSX.Element;
+    mdiMicrophoneOutline: (color?: string) => JSX.Element;
 }
 export { GetSvg };
+export declare class getRandomByPriority {
+    private list;
+    private idField;
+    constructor(p: {
+        list: any[];
+        priorityField: string;
+        idField: string;
+    });
+    private getList;
+    private remove;
+    getItem: (type?: 'remove one' | 'remove all') => any;
+}
+export declare function ExcelToJSON(file: any, successCallback: (json: any) => void, errorCallback: (message: string) => void): void;
+export declare function FakeName(p: {
+    type: 'firstname' | 'lastname' | 'fullname';
+    gender?: 'male' | 'female';
+    lang: 'en' | 'fa';
+}): any;
+export declare function StylingExcel(p: {
+    jsonData: any;
+    search: {
+        rowIndex: number;
+        field: string;
+    }[];
+    getStyle: (cell: any) => any;
+    successCallback: () => void;
+}): void;
