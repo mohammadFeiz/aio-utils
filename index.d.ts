@@ -25,6 +25,10 @@ export declare function Stall(stallTime?: number): Promise<void>;
 export declare function FileToBase64(file: any, callback: (result: any) => void): void;
 export declare function GetPrecisionCount(number: number): number;
 export declare function HandleBackButton(callback?: () => void): void;
+export declare function SortArray(arr: any[], sorts: {
+    getValue: (v: any) => any;
+    inc?: boolean;
+}[]): any[];
 export declare function ParseString(str: string): any;
 export declare function ReOrder(data: any[], fromIndex: number, toIndex: number): any[];
 export declare class DragClass {
