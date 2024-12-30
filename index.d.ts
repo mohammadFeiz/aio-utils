@@ -72,6 +72,15 @@ export declare function GenerateComponsition(p: {
     fields: any;
 }): any[];
 export declare function CalculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number;
+export declare const FilterTree: (p: {
+    data: {
+        [key: string]: any;
+    };
+    checkNode: (node: {
+        [key: string]: any;
+    }) => boolean;
+    childsField: string;
+}) => any;
 export declare function getEventAttrs(eventType: 'onMouseDown' | 'onMouseMove' | 'onMouseUp', callback: (e: any) => void): {
     [x: string]: (e: any) => void;
 };
@@ -198,6 +207,8 @@ export declare class Validation {
     getValidation: () => string | undefined;
     validate: () => string | undefined;
     boolKey: (key: 'more' | 'less') => string;
+    getDateArray: (str: string) => number[];
+    compaireDates: (str1: string, str2: string) => 'less' | 'greater' | 'equal';
     boolDic: any;
     getUnit: (value: any) => string;
     constructor(props: AV_props);
@@ -297,3 +308,5 @@ export declare function FakeName(p: {
     gender?: 'male' | 'female';
     lang: 'en' | 'fa';
 }): any;
+export declare function StyleObjectToString(styleObject: any): string;
+export declare function Normalize(str: string): string;
